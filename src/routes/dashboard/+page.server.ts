@@ -43,11 +43,13 @@ export const load: PageServerLoad<PageServerData> = async ({
             );
 
             // Set a longer-lived user_id cookie for future requests
-            cookies.set("user_id", userId, {
-              path: "/",
-              maxAge: 30 * 24 * 60 * 60, // 30 days
-              sameSite: "lax", // Allow cookie to be sent during page navigation
-            });
+            if (userId) {
+              cookies.set("user_id", userId, {
+                path: "/",
+                maxAge: 30 * 24 * 60 * 60, // 30 days
+                sameSite: "lax", // Allow cookie to be sent during page navigation
+              });
+            }
           }
         } catch (err) {
           console.error("Error parsing auth_user cookie:", err);
@@ -63,7 +65,7 @@ export const load: PageServerLoad<PageServerData> = async ({
           "No auth token found in cookies and no API key available"
         );
         return {
-          clients: [],
+          clients: { data: [] },
           userGroups: [],
           status: "error",
           error: "Not authenticated",
@@ -87,11 +89,13 @@ export const load: PageServerLoad<PageServerData> = async ({
                 console.log("Found user ID in auth_user cookie:", userId);
 
                 // Set a longer-lived user_id cookie for future requests
-                cookies.set("user_id", userId, {
-                  path: "/",
-                  maxAge: 30 * 24 * 60 * 60, // 30 days
-                  sameSite: "lax", // Allow cookie to be sent during page navigation
-                });
+                if (userId) {
+                  cookies.set("user_id", userId, {
+                    path: "/",
+                    maxAge: 30 * 24 * 60 * 60, // 30 days
+                    sameSite: "lax", // Allow cookie to be sent during page navigation
+                  });
+                }
               }
             } catch (err) {
               console.error("Error parsing auth_user cookie:", err);
@@ -137,7 +141,7 @@ export const load: PageServerLoad<PageServerData> = async ({
         } else {
           console.error("No access token found in auth cookie");
           return {
-            clients: [],
+            clients: { data: [] },
             userGroups: [],
             status: "error",
             error: "Invalid auth token",
@@ -146,7 +150,7 @@ export const load: PageServerLoad<PageServerData> = async ({
       } catch (e) {
         console.error("Error parsing auth cookie:", e);
         return {
-          clients: [],
+          clients: { data: [] },
           userGroups: [],
           status: "error",
           error: "Invalid auth token format",
@@ -168,7 +172,7 @@ export const load: PageServerLoad<PageServerData> = async ({
         `Client API request failed with status ${clientsResponse.status}: ${clientsResponse.statusText}`
       );
       return {
-        clients: [],
+        clients: { data: [] },
         userGroups: [],
         status: "error",
         error: `API request failed with status ${clientsResponse.status}`,
@@ -213,31 +217,39 @@ export const load: PageServerLoad<PageServerData> = async ({
       console.warn("No user ID available and not using API key");
     }
 
-    // Transform client data
+    // Transform client data and sort alphabetically by name
     const clients = {
-      data: clientsData.data.map((client: any) => ({
-        ...client,
-        client_id: client.id,
-        description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
-        icon: client.hasLogo ? null : "📱",
-        logoUrl: client.hasLogo
-          ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
-          : null,
-        last_used: new Date().toISOString(),
-      })),
+      data: clientsData.data
+        .map((client: any) => ({
+          ...client,
+          client_id: client.id,
+          description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
+          icon: client.hasLogo ? null : "📱",
+          logoUrl: client.hasLogo
+            ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
+            : null,
+        }))
+        .sort((a: any, b: any) => {
+          // Sort by name, case-insensitive
+          return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+        }),
     };
 
-    console.log("Clients fetched successfully:", clients.data.length);
+    console.log(
+      "Clients fetched and sorted successfully:",
+      clients.data.length
+    );
 
     return {
       clients,
       userGroups,
       status: "success",
+      error: null, // Set to null instead of undefined
     };
   } catch (e) {
     console.error("Error in server load function:", e);
     return {
-      clients: [],
+      clients: { data: [] },
       userGroups: [],
       status: "error",
       error: e instanceof Error ? e.message : "Unknown error",

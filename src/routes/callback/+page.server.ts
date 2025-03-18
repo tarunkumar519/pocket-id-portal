@@ -44,8 +44,8 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
     // Exchange code for tokens on the server
     const tokens = await exchangeCodeForTokens(
       code,
-      clientId,
-      clientSecret,
+      clientId || "",
+      clientSecret || "",
       redirectUri
     );
 
