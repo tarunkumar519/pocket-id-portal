@@ -9,10 +9,11 @@
   let isLoading = false;
   let errorMessage = "";
 
-  const redirectUri =
-    typeof window !== "undefined"
+  const redirectUri = env.PUBLIC_APP_URL
+    ? `${env.PUBLIC_APP_URL}/callback`
+    : typeof window !== "undefined"
       ? `${window.location.origin}/callback`
-      : "http://localhost:5173/callback";
+      : "http://localhost:3000/callback";
 
   function handleLogin() {
     isLoading = true;

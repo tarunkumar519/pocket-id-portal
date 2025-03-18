@@ -37,7 +37,9 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
     // Client configuration from environment variables
     const clientId = env.PUBLIC_OIDC_CLIENT_ID;
     const clientSecret = privateEnv.OIDC_CLIENT_SECRET;
-    const redirectUri = `${url.origin}/callback`;
+    const redirectUri = env.PUBLIC_APP_URL
+      ? `${env.PUBLIC_APP_URL}/callback`
+      : `${url.origin}/callback`;
 
     // Exchange code for tokens on the server
     const tokens = await exchangeCodeForTokens(

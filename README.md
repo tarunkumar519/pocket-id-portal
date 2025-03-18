@@ -76,6 +76,7 @@ PUBLIC_OIDC_CLIENT_ID: Your client ID
 OIDC_CLIENT_SECRET: Your client secret
 PUBLIC_OIDC_SCOPES: Space-separated list of scopes to request
 POCKET_ID_API_KEY: API key for server-side API calls
+PUBLIC_APP_URL: The external URL this portal will run on
 ```
 
 ### Project Structure
