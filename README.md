@@ -4,6 +4,9 @@ A modern, secure user portal for managing Pocket ID authentication applications 
 
 ## Overview
 
+> [!WARNING]
+> This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID
+
 The Pocket ID Portal provides a user-friendly interface for accessing and managing applications that use Pocket ID for authentication. It offers a seamless single sign-on experience with secure OIDC authentication flow.
 
 ## Features
@@ -35,7 +38,7 @@ The Pocket ID Portal provides a user-friendly interface for accessing and managi
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/yourusername/pocket-id-portal.git
+   git clone https://github.com/kmendell/pocket-id-portal.git
    cd pocket-id-portal
    ```
 
