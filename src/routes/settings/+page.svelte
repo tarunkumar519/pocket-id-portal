@@ -15,13 +15,14 @@
   import * as Select from "$lib/components/ui/select/index.js";
   import { Badge } from "$lib/components/ui/badge";
   import { pocketIdService } from "$lib/services/pocket-id-api";
+  import type { UserGroup, ApiError } from "$lib/types";
 
   // User profile data
   $: user = $auth.user;
 
   // User groups state
-  let userGroups = [];
-  let groupsError = null;
+  let userGroups: UserGroup[] = [];
+  let groupsError: ApiError = null;
   let loading = true;
 
   onMount(async () => {
