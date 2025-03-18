@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable, get } from "svelte/store";
 import type { UserInfo, TokenResponse } from "$lib/types";
 import { getAuthState, isAuthenticated } from "$lib/auth";
 
@@ -23,6 +23,14 @@ function createAuthStore() {
   };
 
   const { subscribe, set, update } = writable<AuthStore>(initialState);
+
+  // Keep track of the current state
+  let currentState = initialState;
+
+  // Subscribe to our own store to keep the current state updated
+  subscribe((state) => {
+    currentState = state;
+  });
 
   return {
     subscribe,
@@ -72,16 +80,9 @@ function createAuthStore() {
         initialized: true,
       });
     },
-    getIdToken: () => {
-      let idToken: string | null = null;
-
-      // Use get() to access the store value without subscribing
-      const authState = get(authStore);
-      if (authState.tokens?.id_token) {
-        idToken = authState.tokens.id_token;
-      }
-
-      return idToken;
+    getIdToken: (): string | null => {
+      // Use the current state to get the ID token
+      return currentState.tokens?.id_token || null;
     },
   };
 }
