@@ -5,21 +5,7 @@ RUN mkdir -p /app/data && chown node:node /app/data
 COPY package*.json ./
 RUN npm ci
 COPY . .
-
-# Create dummy env vars for build time
-# Include all required environment variables from .env.example
-RUN cp .env.example .env && \
-    echo "PUBLIC_OIDC_ISSUER=https://example.com" >> .env && \
-    echo "PUBLIC_OIDC_CLIENT_ID=dummy-client-id" >> .env && \
-    echo "OIDC_CLIENT_SECRET=dummy-client-secret" >> .env && \
-    echo "PUBLIC_OIDC_SCOPES=openid profile email" >> .env && \
-    echo "POCKET_ID_API_KEY=dummy-api-key" >> .env && \ 
-    echo "PUBLIC_APP_URL=https://example.com" >> .env
-
 RUN npm run build
-
-# Remove the dummy .env file after build is complete
-RUN rm .env
 
 # Stage 2: Production image
 FROM node:22-alpine

@@ -1,7 +1,7 @@
 import { json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { POCKET_ID_API_KEY } from "$env/static/private";
-import { PUBLIC_OIDC_ISSUER } from "$env/static/public";
+import { env as privateEnv } from "$env/dynamic/private";
+import { env as publicEnv } from "$env/dynamic/public";
 
 export const GET: RequestHandler = async ({
   params,
@@ -20,8 +20,8 @@ export const GET: RequestHandler = async ({
     };
 
     // Use API key from environment
-    if (POCKET_ID_API_KEY) {
-      headers["X-API-Key"] = POCKET_ID_API_KEY;
+    if (privateEnv.POCKET_ID_API_KEY) {
+      headers["X-API-Key"] = privateEnv.POCKET_ID_API_KEY;
       console.log("Using API key for authentication");
     }
     // Fallback to token auth if no API key
@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({
     }
 
     // Forward the request to the actual API
-    const apiUrl = `${PUBLIC_OIDC_ISSUER}/api/${path}${
+    const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/${path}${
       request.url.includes("?")
         ? request.url.substring(request.url.indexOf("?"))
         : ""
@@ -101,8 +101,8 @@ export const POST: RequestHandler = async ({
     };
 
     // Use API key from environment
-    if (POCKET_ID_API_KEY) {
-      headers["X-API-Key"] = POCKET_ID_API_KEY;
+    if (privateEnv.POCKET_ID_API_KEY) {
+      headers["X-API-Key"] = privateEnv.POCKET_ID_API_KEY;
     }
     // Fallback to token auth if no API key
     else {
@@ -129,7 +129,7 @@ export const POST: RequestHandler = async ({
     // Get the request body
     const body = await request.json();
 
-    const apiUrl = `${PUBLIC_OIDC_ISSUER}/api/${path}`;
+    const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/${path}`;
 
     const response = await fetch(apiUrl, {
       method: "POST",
