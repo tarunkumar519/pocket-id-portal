@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { cn } from "$lib/utils";
   import { auth } from "$lib/stores/auth.store";
   import { env } from "$env/dynamic/public";
-  import { browser } from "$app/environment";
   import { LogoutService } from "$lib/services/logout-service";
 
   // Get the base URL from environment variables
@@ -37,7 +36,7 @@
       href="/dashboard"
       class={cn(
         "flex items-center px-4 py-2 text-sm rounded-md",
-        $page.url.pathname === "/" || $page.url.pathname === "/dashboard"
+        page.url.pathname === "/" || page.url.pathname === "/dashboard"
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent/50"
       )}
@@ -48,7 +47,7 @@
       href="/settings"
       class={cn(
         "flex items-center px-4 py-2 text-sm rounded-md",
-        $page.url.pathname.startsWith("/settings")
+        page.url.pathname.startsWith("/settings")
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent/50"
       )}
