@@ -8,7 +8,7 @@
   import { env } from "$env/dynamic/public";
   import * as Select from "$lib/components/ui/select/index.js";
   import { Badge } from "$lib/components/ui/badge";
-  import { pocketIdService } from "$lib/services/pocket-id-api";
+  import { UserService } from "$lib/services/user-service";
   import type { UserGroup, ApiError } from "$lib/types";
   import { goto } from "$app/navigation";
 
@@ -39,15 +39,17 @@
 
   onMount(async () => {
     try {
-      // Use the user information from the auth store instead of direct localStorage access
       if (!$auth.user || !$auth.user.sub) {
         groupsError = "User ID not found";
         loading = false;
         return;
       }
 
-      // Use the user sub (ID) from the auth store
-      userGroups = await pocketIdService.getUserGroups($auth.user.sub);
+      // Use UserService directly instead of pocketIdService
+      const headers = { 
+        "Content-Type": "application/json"
+      };
+      userGroups = await UserService.fetchUserGroups($auth.user.sub, fetch, headers);
       loading = false;
     } catch (error) {
       console.error("Error fetching user groups:", error);
