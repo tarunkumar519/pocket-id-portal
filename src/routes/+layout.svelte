@@ -4,9 +4,10 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth";
+  import { config } from "$lib/stores/portal-config.store";
   import Sidebar from "$lib/components/sidebar.svelte";
-  import { ModeWatcher } from "mode-watcher";
   import { browser } from "$app/environment";
+  import ModeWatcher from "$lib/components/mode-watcher.svelte";
 
   // Public routes that don't require authentication
   const publicRoutes = ["/login", "/callback", "/forgot-password"];
@@ -17,9 +18,10 @@
       $page.url.pathname === route || $page.url.pathname.startsWith(route + "/")
   );
 
-  // Initialize auth on mount
+  // Initialize auth and config on mount
   onMount(() => {
     auth.init();
+    config.init();
 
     // Immediately check auth status for non-public routes
     if (browser && !isPublicRoute) {
@@ -32,6 +34,13 @@
     if (!isPublicRoute && !$auth.isAuthenticated && $auth.initialized) {
       console.log("Not authenticated, redirecting to login");
       goto("/login", { replaceState: true });
+    } else if (
+      $auth.isAuthenticated &&
+      $page.url.pathname === "/" &&
+      $config.landingPage === "applications"
+    ) {
+      // Redirect to applications page if that's the preferred landing page
+      goto("/applications", { replaceState: true });
     }
   }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { auth } from "$lib/stores/auth";
+  import { config, type UserConfig } from "$lib/stores/portal-config.store";
   import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";
   import { Separator } from "$lib/components/ui/separator";
@@ -9,6 +10,7 @@
   import { Badge } from "$lib/components/ui/badge";
   import { pocketIdService } from "$lib/services/pocket-id-api";
   import type { UserGroup, ApiError } from "$lib/types";
+  import { goto } from "$app/navigation";
 
   // User profile data
   $: user = $auth.user;
@@ -17,6 +19,23 @@
   let userGroups: UserGroup[] = [];
   let groupsError: ApiError = null;
   let loading = true;
+
+  // Use the config store values
+  let themePreference = $config.theme;
+  let landingPage = $config.landingPage;
+
+  // Theme options
+  const themeOptions = [
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+    { value: "system", label: "System" },
+  ] as const;
+
+  // Landing page options
+  const pageOptions = [
+    { value: "dashboard", label: "Dashboard" },
+    { value: "settings", label: "Settings" },
+  ] as const;
 
   onMount(async () => {
     try {
@@ -37,22 +56,17 @@
     }
   });
 
-  // Theme options
-  const themeOptions = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "system", label: "System" },
-  ];
+  // Update theme preference when selected
+  function updateTheme(value: UserConfig["theme"]) {
+    themePreference = value;
+    config.setTheme(value);
+  }
 
-  // Landing page options
-  const pageOptions = [
-    { value: "dashboard", label: "Dashboard" },
-    { value: "applications", label: "Applications" },
-  ];
-
-  // Theme and landing page preferences
-  let themePreference = "system";
-  let landingPage = "dashboard";
+  // Update landing page preference when selected
+  function updateLandingPage(value: UserConfig["landingPage"]) {
+    landingPage = value;
+    config.setLandingPage(value);
+  }
 
   // Derived values for display in trigger
   $: themeLabel =
@@ -167,7 +181,12 @@
         <div class="space-y-4">
           <div>
             <p class="text-sm font-medium mb-2">Theme Preference</p>
-            <Select.Root type="single" bind:value={themePreference}>
+            <Select.Root
+              type="single"
+              value={themePreference}
+              onValueChange={(value) =>
+                updateTheme(value as UserConfig["theme"])}
+            >
               <Select.Trigger class="w-[180px]">
                 {themeLabel}
               </Select.Trigger>
@@ -188,7 +207,12 @@
 
           <div>
             <p class="text-sm font-medium mb-2">Default Landing Page</p>
-            <Select.Root type="single" bind:value={landingPage}>
+            <Select.Root
+              type="single"
+              value={landingPage}
+              onValueChange={(value) =>
+                updateLandingPage(value as UserConfig["landingPage"])}
+            >
               <Select.Trigger class="w-[180px]">
                 {pageLabel}
               </Select.Trigger>
