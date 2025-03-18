@@ -4,10 +4,10 @@
   import { storeAuthState } from "$lib/auth";
   import { auth } from "$lib/stores/auth.store.js";
 
-  export let data;
+  let { data } = $props();
 
-  let isLoading = true;
-  let errorMessage = "";
+  let isLoading = $state(true);
+  let errorMessage = $state("");
 
   onMount(() => {
     if (data.success) {
@@ -85,7 +85,7 @@
           </div>
           <button
             class="w-full rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            on:click={() => goto("/login")}
+            onclick={() => goto("/login")}
           >
             Back to Login
           </button>

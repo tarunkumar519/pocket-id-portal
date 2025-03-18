@@ -6,8 +6,8 @@
     generateNonce,
   } from "$lib/auth";
 
-  let isLoading = false;
-  let errorMessage = "";
+  let isLoading = $state(false);
+  let errorMessage = $state("");
 
   const redirectUri = env.PUBLIC_APP_URL
     ? `${env.PUBLIC_APP_URL}/callback`
@@ -73,7 +73,7 @@
       {/if}
 
       <button
-        on:click={handleLogin}
+        onclick={handleLogin}
         disabled={isLoading}
         class="w-full rounded-md bg-primary py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center"
       >

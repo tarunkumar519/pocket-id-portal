@@ -5,8 +5,12 @@
   import { Badge } from "$lib/components/ui/badge";
   import type { Client, PageServerData, UserGroup } from "$lib/types";
 
-  // Get data from the server load function - now includes filtered clients and user groups
-  export let data: PageServerData;
+  interface Props {
+    // Get data from the server load function - now includes filtered clients and user groups
+    data: PageServerData;
+  }
+
+  let { data }: Props = $props();
 
   // All data now comes from server
   let userGroups: UserGroup[] = data.userGroups || [];
@@ -17,7 +21,7 @@
   let itemsPerPage = 9; // 3 rows of 3 cards in desktop view
 
   // Calculate total items
-  $: totalItems = accessibleClients.length;
+  let totalItems = $derived(accessibleClients.length);
 
   // Get current page items based on pagination component's current page
   function getPaginatedClients(currentPage: number) {
@@ -55,7 +59,7 @@
       </p>
       <button
         class="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-        on:click={() => window.location.reload()}
+        onclick={() => window.location.reload()}
       >
         Try Again
       </button>

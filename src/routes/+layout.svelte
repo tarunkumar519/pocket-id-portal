@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   import "../app.css";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
@@ -8,14 +10,22 @@
   import Sidebar from "$lib/components/sidebar.svelte";
   import { browser } from "$app/environment";
   import ModeWatcher from "$lib/components/mode-watcher.svelte";
+  interface Props {
+    children?: import("svelte").Snippet;
+  }
+
+  let { children }: Props = $props();
 
   // Public routes that don't require authentication
   const publicRoutes = ["/login", "/callback"];
 
   // Check if current route is public
-  $: isPublicRoute = publicRoutes.some(
-    (route) =>
-      $page.url.pathname === route || $page.url.pathname.startsWith(route + "/")
+  let isPublicRoute = $derived(
+    publicRoutes.some(
+      (route) =>
+        $page.url.pathname === route ||
+        $page.url.pathname.startsWith(route + "/")
+    )
   );
 
   // Initialize auth and config on mount
@@ -39,12 +49,14 @@
   }
 
   // Watch for auth store changes and URL changes
-  $: if ($auth.initialized && $page.url) {
-    checkAuthAndRedirect();
-  }
+  run(() => {
+    if ($auth.initialized && $page.url) {
+      checkAuthAndRedirect();
+    }
+  });
 
   // Check if we should show the sidebar
-  $: showSidebar = !isPublicRoute && $auth.isAuthenticated;
+  let showSidebar = $derived(!isPublicRoute && $auth.isAuthenticated);
 </script>
 
 <ModeWatcher />
@@ -53,7 +65,7 @@
   <div class="flex h-screen">
     <Sidebar />
     <main class="flex-1 overflow-y-auto p-6">
-      <slot />
+      {@render children?.()}
     </main>
   </div>
 {:else if !isPublicRoute && !$auth.isAuthenticated && $auth.initialized}
@@ -64,5 +76,5 @@
     ></div>
   </div>
 {:else}
-  <slot />
+  {@render children?.()}
 {/if}

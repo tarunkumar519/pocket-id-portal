@@ -1,12 +1,19 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth.store";
 
-  export let requiredRole: string | null = null;
+  interface Props {
+    requiredRole?: string | null;
+    children?: import("svelte").Snippet;
+  }
 
-  let isAuthorized = false;
-  let isLoading = true;
+  let { requiredRole = null, children }: Props = $props();
+
+  let isAuthorized = $state(false);
+  let isLoading = $state(true);
 
   onMount(() => {
     checkAuthorization();
@@ -35,7 +42,9 @@
   }
 
   // Re-check authorization when auth state changes
-  $: if ($auth) checkAuthorization();
+  run(() => {
+    if ($auth) checkAuthorization();
+  });
 </script>
 
 {#if isLoading}
@@ -45,7 +54,7 @@
     ></div>
   </div>
 {:else if isAuthorized}
-  <slot />
+  {@render children?.()}
 {:else}
   <div class="flex flex-col items-center justify-center h-full">
     <h2 class="text-xl font-bold">Not Authorized</h2>

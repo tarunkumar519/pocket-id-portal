@@ -4,17 +4,21 @@
   import * as Card from "$lib/components/ui/card";
   import { Badge } from "$lib/components/ui/badge";
 
-  export let client: {
-    client_id: string;
-    name: string;
-    description: string;
-    hasLogo?: boolean;
-    logoUrl?: string | null;
-    icon?: string | null;
-    logoError?: boolean;
-    accessGroups?: string[];
-    restrictedAccess?: boolean;
-  };
+  interface Props {
+    client: {
+      client_id: string;
+      name: string;
+      description: string;
+      hasLogo?: boolean;
+      logoUrl?: string | null;
+      icon?: string | null;
+      logoError?: boolean;
+      accessGroups?: string[];
+      restrictedAccess?: boolean;
+    };
+  }
+
+  let { client = $bindable() }: Props = $props();
 
   // Handle image error
   function handleImageError() {
@@ -42,7 +46,7 @@
             src={client.logoUrl}
             alt="{client.name} logo"
             class="w-12 h-12 object-contain"
-            on:error={handleImageError}
+            onerror={handleImageError}
           />
         </div>
       {:else}

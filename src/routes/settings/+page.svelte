@@ -13,16 +13,16 @@
   import { goto } from "$app/navigation";
 
   // User profile data
-  $: user = $auth.user;
+  let user = $derived($auth.user);
 
   // User groups state
-  let userGroups: UserGroup[] = [];
-  let groupsError: ApiError = null;
-  let loading = true;
+  let userGroups: UserGroup[] = $state([]);
+  let groupsError: ApiError = $state(null);
+  let loading = $state(true);
 
   // Use the config store values
-  let themePreference = $config.theme;
-  let landingPage = $config.landingPage;
+  let themePreference = $state($config.theme);
+  let landingPage = $state($config.landingPage);
 
   // Theme options
   const themeOptions = [
@@ -46,10 +46,14 @@
       }
 
       // Use UserService directly instead of pocketIdService
-      const headers = { 
-        "Content-Type": "application/json"
+      const headers = {
+        "Content-Type": "application/json",
       };
-      userGroups = await UserService.fetchUserGroups($auth.user.sub, fetch, headers);
+      userGroups = await UserService.fetchUserGroups(
+        $auth.user.sub,
+        fetch,
+        headers
+      );
       loading = false;
     } catch (error) {
       console.error("Error fetching user groups:", error);
@@ -71,11 +75,13 @@
   }
 
   // Derived values for display in trigger
-  $: themeLabel =
+  let themeLabel = $derived(
     themeOptions.find((t) => t.value === themePreference)?.label ??
-    "Select theme";
-  $: pageLabel =
-    pageOptions.find((p) => p.value === landingPage)?.label ?? "Select page";
+      "Select theme"
+  );
+  let pageLabel = $derived(
+    pageOptions.find((p) => p.value === landingPage)?.label ?? "Select page"
+  );
 </script>
 
 <svelte:head>
