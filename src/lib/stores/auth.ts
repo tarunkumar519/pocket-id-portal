@@ -1,6 +1,7 @@
 import { writable, get } from "svelte/store";
 import type { UserInfo, TokenResponse } from "$lib/types";
 import { getAuthState, isAuthenticated } from "$lib/auth";
+import { browser } from "$app/environment";
 
 // Define the auth store type
 type AuthStore = {
@@ -63,6 +64,34 @@ function createAuthStore() {
       }
     },
     setUser: (user: UserInfo, tokens: TokenResponse) => {
+      // Set userId in a cookie for server-side access
+      if (browser && user?.sub) {
+        // Use a longer expiration time for the user_id cookie (30 days)
+        const longMaxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+        const domain = window.location.hostname;
+
+        // Store userId in a dedicated cookie with domain for server-side access
+        document.cookie = `user_id=${user.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
+        console.log(
+          `Set user_id cookie with domain ${domain} and 30-day expiration:`,
+          user.sub
+        );
+
+        // Standard token expiration for the other cookies
+        const tokenMaxAge =
+          typeof tokens.expires_in === "number" && !isNaN(tokens.expires_in)
+            ? tokens.expires_in
+            : 3600; // Default to 1 hour
+
+        // Also store the user data in auth_user cookie
+        document.cookie = `auth_user=${JSON.stringify(
+          user
+        )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax`;
+        document.cookie = `auth_token=${JSON.stringify(
+          tokens
+        )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax`;
+      }
+
       set({
         isAuthenticated: true,
         user,
@@ -72,6 +101,11 @@ function createAuthStore() {
       });
     },
     clearUser: () => {
+      // Clear userId cookie
+      if (browser) {
+        document.cookie = "user_id=; path=/; max-age=0; SameSite=Strict";
+      }
+
       set({
         isAuthenticated: false,
         user: null,
@@ -83,6 +117,10 @@ function createAuthStore() {
     getIdToken: (): string | null => {
       // Use the current state to get the ID token
       return currentState.tokens?.id_token || null;
+    },
+    getUserId: (): string | null => {
+      // Get userId from the current state
+      return currentState.user?.sub || null;
     },
   };
 }

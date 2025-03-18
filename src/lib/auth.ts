@@ -202,30 +202,58 @@ export function storeAuthState(
     localStorage.setItem("auth_user", JSON.stringify(userInfo));
     localStorage.setItem("auth_time", Date.now().toString());
 
-    // Fix the max-age value - ensure it's a valid integer
-    const maxAge =
+    // Regular token expiration for auth cookies
+    const tokenMaxAge =
       typeof tokens.expires_in === "number" && !isNaN(tokens.expires_in)
         ? tokens.expires_in
         : 3600; // Default to 1 hour if invalid
 
-    // Also store the access token in a cookie for server-side access
+    // Store the tokens in a cookie for server-side access
     document.cookie = `auth_token=${JSON.stringify(
       tokens
-    )}; path=/; max-age=${maxAge}; SameSite=Strict`;
+    )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax`;
+
+    // Store user info in a cookie for server-side access
+    document.cookie = `auth_user=${JSON.stringify(
+      userInfo
+    )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax`;
+
+    // User ID cookie gets a much longer expiration (30 days)
+    const longMaxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+
+    // Also store just the user ID in a dedicated cookie with longer expiration
+    // Use domain parameter to ensure the cookie works across all pages
+    if (userInfo.sub) {
+      const domain = window.location.hostname;
+      document.cookie = `user_id=${userInfo.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
+      console.log(
+        `Set user_id cookie with domain ${domain} and 30-day expiration:`,
+        userInfo.sub
+      );
+    }
   } catch (error) {
     console.error("Error storing auth state:", error);
   }
 }
 
 // Clear auth state
-export function clearAuthState(): void {
+export function clearAuthState(preserveUserId: boolean = false): void {
   if (typeof window !== "undefined") {
     localStorage.removeItem("auth_tokens");
-    localStorage.removeItem("auth_user"); // Fixed: was "user_info"
+    localStorage.removeItem("auth_user");
     localStorage.removeItem("auth_time");
 
-    // Also clear the cookie
-    document.cookie = "auth_token=; path=/; max-age=0; SameSite=Strict";
+    // Get the domain for cookie deletion
+    const domain = window.location.hostname;
+
+    // Clear cookies but optionally preserve user_id
+    document.cookie = `auth_token=; path=/; max-age=0; domain=${domain}; SameSite=Lax`;
+    document.cookie = `auth_user=; path=/; max-age=0; domain=${domain}; SameSite=Lax`;
+
+    // Only clear user_id cookie if not preserving it
+    if (!preserveUserId) {
+      document.cookie = `user_id=; path=/; max-age=0; domain=${domain}; SameSite=Lax`;
+    }
   }
 }
 

@@ -1,32 +1,26 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
-  import { config } from "$lib/stores/portal-config.store";
   import { auth } from "$lib/stores/auth";
   import ClientCard from "$lib/components/ClientCard.svelte";
   import * as Pagination from "$lib/components/ui/pagination/index.js";
+  import { Badge } from "$lib/components/ui/badge";
 
-  // Get data from the server load function
+  // Get data from the server load function - now includes filtered clients and user groups
   export let data;
 
-  // Use the pre-processed clients directly
-  let userClients = data.clients?.data || [];
-  let isLoading = false;
-  let error = data.status === "error" ? data.error : null;
-  let authStatus =
-    data.status === "success"
-      ? "Clients fetched successfully."
-      : "Error loading clients";
+  // All data now comes from server
+  let userGroups = data.userGroups || [];
+  const accessibleClients = data.clients?.data || [];
+  const error = data.status === "error" ? data.error : null;
 
   // Pagination state
-  let itemsPerPage = 9; // 2 rows of 3 cards in desktop view
+  let itemsPerPage = 9; // 3 rows of 3 cards in desktop view
 
   // Calculate total items
-  $: totalItems = userClients.length;
+  $: totalItems = accessibleClients.length;
 
   // Get current page items based on pagination component's current page
   function getPaginatedClients(currentPage: number) {
-    return userClients.slice(
+    return accessibleClients.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     );
@@ -50,13 +44,7 @@
     </div>
   </div>
 
-  {#if isLoading}
-    <div class="flex h-40 items-center justify-center">
-      <div
-        class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
-      ></div>
-    </div>
-  {:else if error}
+  {#if error}
     <div class="rounded-lg border bg-card shadow-sm p-6">
       <h3 class="text-lg font-medium text-red-500">
         Error loading applications
@@ -79,9 +67,17 @@
           These are the applications you can sign into using your Pocket ID
           account
         </p>
+        {#if userGroups.length > 0}
+          <div class="mt-2 flex flex-wrap gap-2">
+            <span class="text-xs text-muted-foreground">Your groups:</span>
+            {#each userGroups as group}
+              <Badge variant="secondary" class="text-xs">{group.name}</Badge>
+            {/each}
+          </div>
+        {/if}
       </div>
       <div class="p-6 pt-0 flex-grow flex flex-col relative">
-        {#if userClients.length === 0}
+        {#if accessibleClients.length === 0}
           <div
             class="flex flex-col items-center justify-center py-8 text-center"
           >
@@ -115,7 +111,7 @@
             </p>
           </div>
         {:else}
-          <div class="flex flex-col h-full">
+          <div class="flex flex-col h-full pb-16 relative">
             <Pagination.Root count={totalItems} perPage={itemsPerPage}>
               {#snippet children({ pages, currentPage })}
                 <div

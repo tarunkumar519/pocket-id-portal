@@ -15,6 +15,18 @@
         // First store auth state in localStorage
         if (data.tokens && data.userInfo) {
           storeAuthState(data.tokens, data.userInfo);
+
+          // Set a dedicated user_id cookie for easier server-side access
+          if (data.userInfo.sub) {
+            const longMaxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+            const domain = window.location.hostname;
+
+            document.cookie = `user_id=${data.userInfo.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
+            console.log(
+              `Set user_id cookie with domain ${domain} and 30-day expiration:`,
+              data.userInfo.sub
+            );
+          }
         } else {
           throw new Error("Missing tokens or user info");
         }

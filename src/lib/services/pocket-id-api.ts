@@ -66,6 +66,34 @@ class PocketIdService {
     }
   }
 
+  // Get client details including allowed groups
+  async getClientDetails(clientId: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/oidc/clients/${clientId}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch client details: ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`Error fetching client details for ${clientId}:`, error);
+      throw new Error(
+        `Failed to fetch client details: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
+
   // Other API methods...
 }
 

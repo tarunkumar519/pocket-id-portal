@@ -31,14 +31,17 @@ export class LogoutService {
       // Save user preferences before logout
       const userConfig = this.preserveUserConfig();
 
-      // Clear local auth state first
+      // Get the user ID before clearing auth state
+      const userId = auth.getUserId();
+
+      // Clear local auth state first, but preserve the user ID in cookies
+      clearAuthState(true); // Pass true to preserve the user_id cookie
+
+      // Then clear the auth store
       auth.clearUser();
 
       // Clear browser storage
       this.clearStorage(userConfig);
-
-      // Clear cookies
-      this.clearCookies();
 
       // Handle OIDC logout and redirect
       await this.handleOidcLogout(idToken);
