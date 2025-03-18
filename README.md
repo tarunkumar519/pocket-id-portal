@@ -5,7 +5,7 @@ A modern, secure user portal for managing Pocket ID authentication applications 
 ## Overview
 
 > [!WARNING]
-> This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID
+> This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID. There may be certain things (outside of the pocket-id api info) that dont work currently.
 
 The Pocket ID Portal provides a user-friendly interface for accessing and managing applications that use Pocket ID for authentication. It offers a seamless single sign-on experience with secure OIDC authentication flow.
 
