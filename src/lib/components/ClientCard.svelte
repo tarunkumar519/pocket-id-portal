@@ -4,15 +4,13 @@
   import * as Card from "$lib/components/ui/card";
   import { Badge } from "$lib/components/ui/badge";
 
-  // Props for the component
   export let client: {
     client_id: string;
     name: string;
     description: string;
-    hasLogo: boolean;
-    logoUrl: string | null;
-    icon: string | null;
-    last_used: Date | string;
+    hasLogo?: boolean;
+    logoUrl?: string | null;
+    icon?: string | null;
     logoError?: boolean;
     accessGroups?: string[];
     restrictedAccess?: boolean;

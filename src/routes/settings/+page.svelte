@@ -184,7 +184,7 @@
             <Select.Root
               type="single"
               value={themePreference}
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 updateTheme(value as UserConfig["theme"])}
             >
               <Select.Trigger class="w-[180px]">
@@ -210,7 +210,7 @@
             <Select.Root
               type="single"
               value={landingPage}
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 updateLandingPage(value as UserConfig["landingPage"])}
             >
               <Select.Trigger class="w-[180px]">
