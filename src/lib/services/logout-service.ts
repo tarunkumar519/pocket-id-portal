@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { auth } from "$lib/stores/auth";
+import { clearAuthState } from "$lib/auth"; // Add this import
 import { env } from "$env/dynamic/public";
 
 /**
@@ -31,9 +32,6 @@ export class LogoutService {
       // Save user preferences before logout
       const userConfig = this.preserveUserConfig();
 
-      // Get the user ID before clearing auth state
-      const userId = auth.getUserId();
-
       // Clear local auth state first, but preserve the user ID in cookies
       clearAuthState(true); // Pass true to preserve the user_id cookie
 
@@ -42,6 +40,9 @@ export class LogoutService {
 
       // Clear browser storage
       this.clearStorage(userConfig);
+
+      // Clear cookies - but not the user_id cookie which is preserved by clearAuthState
+      this.clearCookiesExceptUserId();
 
       // Handle OIDC logout and redirect
       await this.handleOidcLogout(idToken);
@@ -89,9 +90,28 @@ export class LogoutService {
   }
 
   /**
-   * Clears all cookies by setting their expiry date to the past
+   * Clears all cookies except user_id by setting their expiry date to the past
    */
-  private static clearCookies(): void {
+  private static clearCookiesExceptUserId(): void {
+    if (!browser) return;
+
+    document.cookie.split(";").forEach((c) => {
+      const cookie = c.trim();
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+
+      // Skip the user_id cookie
+      if (name.trim() !== "user_id") {
+        document.cookie =
+          name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      }
+    });
+  }
+
+  /**
+   * Clears all cookies including user_id (for fallback)
+   */
+  private static clearAllCookies(): void {
     if (!browser) return;
 
     document.cookie.split(";").forEach((c) => {
@@ -135,14 +155,17 @@ export class LogoutService {
     // Save user preferences
     const userConfig = this.preserveUserConfig();
 
-    // Clear auth state
+    // Clear auth state directly without preserving user_id
+    clearAuthState(false);
+
+    // Clear the auth store
     auth.clearUser();
 
     // Clear storage
     this.clearStorage(userConfig);
 
-    // Clear cookies
-    this.clearCookies();
+    // Clear all cookies including user_id
+    this.clearAllCookies();
 
     // Redirect to login page
     if (browser) {
