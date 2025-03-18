@@ -3,13 +3,14 @@
   import ClientCard from "$lib/components/ClientCard.svelte";
   import * as Pagination from "$lib/components/ui/pagination/index.js";
   import { Badge } from "$lib/components/ui/badge";
+  import type { Client, PageServerData, UserGroup } from "$lib/types";
 
   // Get data from the server load function - now includes filtered clients and user groups
-  export let data;
+  export let data: PageServerData;
 
   // All data now comes from server
-  let userGroups = data.userGroups || [];
-  const accessibleClients = data.clients?.data || [];
+  let userGroups: UserGroup[] = data.userGroups || [];
+  const accessibleClients: Client[] = data.clients?.data || [];
   const error = data.status === "error" ? data.error : null;
 
   // Pagination state

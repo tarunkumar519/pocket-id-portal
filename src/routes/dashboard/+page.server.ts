@@ -2,22 +2,13 @@ import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
+import type { PageServerData } from "$lib/types";
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
+export const load: PageServerLoad<PageServerData> = async ({
+  fetch,
+  cookies,
+}) => {
   try {
-    // Debug available cookies
-    console.log(
-      "Available cookies:",
-      Object.fromEntries(
-        cookies
-          .getAll()
-          .map((c) => [
-            c.name,
-            c.value ? c.value.substring(0, 10) + "..." : "empty",
-          ])
-      )
-    );
-
     // Prepare headers with API key from environment
     const headers: Record<string, string> = {
       Accept: "*/*",
@@ -164,7 +155,6 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     }
 
     // Fetch clients first, as we always need them
-    console.log(`Fetching clients with headers: ${JSON.stringify(headers)}`);
     const clientsResponse = await fetch(
       `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients`,
       {
