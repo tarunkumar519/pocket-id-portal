@@ -5,6 +5,7 @@
   import { goto } from "$app/navigation";
   import { env } from "$env/dynamic/public";
   import { browser } from "$app/environment";
+  import { config } from "$lib/stores/portal-config.store";
 
   // Get the base URL from environment variables
   const baseUrl = env.PUBLIC_OIDC_ISSUER;
@@ -140,10 +141,10 @@
 
   <nav class="flex-1 px-4 space-y-1">
     <a
-      href="/"
+      href="/dashboard"
       class={cn(
         "flex items-center px-4 py-2 text-sm rounded-md",
-        $page.url.pathname === "/"
+        $page.url.pathname === "/" || $page.url.pathname === "/dashboard"
           ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
           : "text-sidebar-foreground hover:bg-sidebar-accent/50"
       )}

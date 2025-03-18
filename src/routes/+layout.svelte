@@ -10,7 +10,7 @@
   import ModeWatcher from "$lib/components/mode-watcher.svelte";
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/login", "/callback", "/forgot-password"];
+  const publicRoutes = ["/login", "/callback"];
 
   // Check if current route is public
   $: isPublicRoute = publicRoutes.some(
@@ -34,14 +34,8 @@
     if (!isPublicRoute && !$auth.isAuthenticated && $auth.initialized) {
       console.log("Not authenticated, redirecting to login");
       goto("/login", { replaceState: true });
-    } else if (
-      $auth.isAuthenticated &&
-      $page.url.pathname === "/" &&
-      $config.landingPage === "applications"
-    ) {
-      // Redirect to applications page if that's the preferred landing page
-      goto("/applications", { replaceState: true });
     }
+    // Remove the redirect from "/" to settings here since we handle it in +page.svelte
   }
 
   // Watch for auth store changes and URL changes

@@ -4,7 +4,7 @@ import { browser } from "$app/environment";
 // Define the user config type
 export type UserConfig = {
   theme: "light" | "dark" | "system";
-  landingPage: "dashboard" | "applications";
+  landingPage: "dashboard" | "settings";
 };
 
 // Default configuration
