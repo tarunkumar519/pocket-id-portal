@@ -31,7 +31,7 @@ function getOidcConfig(): OIDCConfig {
     userinfo_endpoint: endpoints.userinfoEndpoint,
     jwks_uri: endpoints.jwksUri,
     scopes_supported: (env.PUBLIC_OIDC_SCOPES || "openid profile email").split(
-      " "
+      " ",
     ),
     response_types_supported: [
       "code",
@@ -63,7 +63,7 @@ export function buildAuthorizationUrl(
   scope: string = env.PUBLIC_OIDC_SCOPES || "openid profile email",
   response_type: string = "code",
   state: string = generateState(),
-  nonce: string = generateNonce()
+  nonce: string = generateNonce(),
 ): string {
   const params = new URLSearchParams({
     client_id,
@@ -82,7 +82,7 @@ export async function exchangeCodeForTokens(
   code: string,
   client_id: string,
   client_secret: string,
-  redirect_uri: string
+  redirect_uri: string,
 ): Promise<TokenResponse> {
   try {
     const params = new URLSearchParams({
@@ -104,7 +104,7 @@ export async function exchangeCodeForTokens(
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(
-        errorData.error_description || "Failed to exchange code for tokens"
+        errorData.error_description || "Failed to exchange code for tokens",
       );
     }
 
@@ -163,7 +163,7 @@ export function validateIdToken(id_token: string): boolean {
 export async function refreshAccessToken(
   refresh_token: string,
   client_id: string,
-  client_secret: string
+  client_secret: string,
 ): Promise<TokenResponse> {
   // In a real app, this would make an API call to the token endpoint
   // For now, we'll return a mock response
@@ -205,7 +205,7 @@ export function getAuthState(): {
 // Store auth state in localStorage and cookies
 export function storeAuthState(
   tokens: TokenResponse,
-  userInfo: UserInfo
+  userInfo: UserInfo,
 ): void {
   try {
     // Store in localStorage
@@ -221,12 +221,12 @@ export function storeAuthState(
 
     // Store the tokens in a cookie for server-side access
     document.cookie = `auth_token=${JSON.stringify(
-      tokens
+      tokens,
     )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax`;
 
     // Store user info in a cookie for server-side access
     document.cookie = `auth_user=${JSON.stringify(
-      userInfo
+      userInfo,
     )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax`;
 
     // User ID cookie gets a much longer expiration (30 days)
@@ -239,7 +239,7 @@ export function storeAuthState(
       document.cookie = `user_id=${userInfo.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
       console.log(
         `Set user_id cookie with domain ${domain} and 30-day expiration:`,
-        userInfo.sub
+        userInfo.sub,
       );
     }
   } catch (error) {
@@ -285,7 +285,7 @@ export async function handleCallback(
   url: URL,
   client_id: string,
   client_secret: string,
-  redirect_uri: string
+  redirect_uri: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const params = new URLSearchParams(url.search);
@@ -312,7 +312,7 @@ export async function handleCallback(
       code,
       client_id,
       client_secret,
-      redirect_uri
+      redirect_uri,
     );
 
     // Validate ID token

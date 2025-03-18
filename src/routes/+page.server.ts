@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
       if (!authCookie) {
         console.error(
-          "No auth token found in cookies and no API key available"
+          "No auth token found in cookies and no API key available",
         );
         return {
           clients: [],
@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
     if (!response.ok) {
       console.error(
-        `API request failed with status ${response.status}: ${response.statusText}`
+        `API request failed with status ${response.status}: ${response.statusText}`,
       );
       return {
         clients: [],
@@ -89,13 +89,13 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
             ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
             : null,
           last_used: new Date().toISOString(),
-        })
+        }),
       ),
     };
 
     console.log(
       "Clients fetched and transformed successfully:",
-      clients.data.length
+      clients.data.length,
     );
 
     return {

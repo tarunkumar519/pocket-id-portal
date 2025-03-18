@@ -38,7 +38,7 @@ export const load: PageServerLoad<PageServerData> = async ({
             userId = userData.sub;
             console.log(
               "Found user ID in auth_user cookie with API key:",
-              userId
+              userId,
             );
 
             // Set a longer-lived user_id cookie for future requests
@@ -61,7 +61,7 @@ export const load: PageServerLoad<PageServerData> = async ({
 
       if (!authCookie) {
         console.error(
-          "No auth token found in cookies and no API key available"
+          "No auth token found in cookies and no API key available",
         );
         return {
           clients: { data: [] },
@@ -111,7 +111,7 @@ export const load: PageServerLoad<PageServerData> = async ({
                   headers: {
                     Authorization: `Bearer ${accessToken}`,
                   },
-                }
+                },
               );
 
               if (userInfoResponse.ok) {
@@ -130,7 +130,7 @@ export const load: PageServerLoad<PageServerData> = async ({
               } else {
                 console.error(
                   "Failed to fetch userinfo:",
-                  userInfoResponse.status
+                  userInfoResponse.status,
                 );
               }
             } catch (fetchErr) {
@@ -163,12 +163,12 @@ export const load: PageServerLoad<PageServerData> = async ({
       {
         method: "GET",
         headers,
-      }
+      },
     );
 
     if (!clientsResponse.ok) {
       console.error(
-        `Client API request failed with status ${clientsResponse.status}: ${clientsResponse.statusText}`
+        `Client API request failed with status ${clientsResponse.status}: ${clientsResponse.statusText}`,
       );
       return {
         clients: { data: [] },
@@ -190,17 +190,17 @@ export const load: PageServerLoad<PageServerData> = async ({
           {
             method: "GET",
             headers,
-          }
+          },
         );
 
         if (userGroupsResponse.ok) {
           userGroups = await userGroupsResponse.json();
           console.log(
-            `Fetched ${userGroups.length} user groups for user ${userId}`
+            `Fetched ${userGroups.length} user groups for user ${userId}`,
           );
         } else {
           console.warn(
-            `Failed to fetch user groups: ${userGroupsResponse.status}`
+            `Failed to fetch user groups: ${userGroupsResponse.status}`,
           );
           // Continue without user groups
         }
@@ -236,7 +236,7 @@ export const load: PageServerLoad<PageServerData> = async ({
 
     console.log(
       "Clients fetched and sorted successfully:",
-      clients.data.length
+      clients.data.length,
     );
 
     return {

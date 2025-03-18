@@ -26,7 +26,7 @@ class PocketIdService {
       throw new Error(
         `Failed to fetch user clients: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }
@@ -61,7 +61,7 @@ class PocketIdService {
       throw new Error(
         `Failed to fetch user groups: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }
@@ -79,7 +79,7 @@ class PocketIdService {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch client details: ${response.statusText}`
+          `Failed to fetch client details: ${response.statusText}`,
         );
       }
 
@@ -89,7 +89,7 @@ class PocketIdService {
       throw new Error(
         `Failed to fetch client details: ${
           error instanceof Error ? error.message : String(error)
-        }`
+        }`,
       );
     }
   }

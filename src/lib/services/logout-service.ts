@@ -136,7 +136,7 @@ export class LogoutService {
 
       // Include post_logout_redirect_uri and id_token_hint
       let logoutUrlWithParams = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(
-        redirectUri
+        redirectUri,
       )}`;
       logoutUrlWithParams += `&id_token_hint=${encodeURIComponent(idToken)}`;
 

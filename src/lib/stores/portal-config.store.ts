@@ -75,7 +75,7 @@ function applyTheme(theme: UserConfig["theme"]) {
   // Apply new theme
   if (theme === "system") {
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
+      "(prefers-color-scheme: dark)",
     ).matches;
     document.documentElement.classList.add(prefersDark ? "dark" : "light");
   } else {

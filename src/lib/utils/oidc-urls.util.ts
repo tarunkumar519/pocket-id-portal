@@ -21,7 +21,7 @@ export function generateOidcEndpoints(issuerUrl: string) {
 export function getLogoUrl(
   issuerUrl: string,
   clientId: string | null = null,
-  lightMode: boolean = false
+  lightMode: boolean = false,
 ) {
   const baseUrl = issuerUrl.endsWith("/") ? issuerUrl.slice(0, -1) : issuerUrl;
 
@@ -46,7 +46,7 @@ export function getAccountManagementUrl(issuerUrl: string) {
 export function buildLogoutUrl(
   issuerUrl: string,
   idToken: string | null,
-  redirectUri: string
+  redirectUri: string,
 ) {
   const baseUrl = issuerUrl.endsWith("/") ? issuerUrl.slice(0, -1) : issuerUrl;
   const logoutUrl = `${baseUrl}/api/oidc/end-session`;

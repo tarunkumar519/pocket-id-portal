@@ -30,7 +30,7 @@ export const GET: RequestHandler = async ({
 
       if (!authCookie) {
         console.error(
-          "No auth token found in cookies and no API key available"
+          "No auth token found in cookies and no API key available",
         );
         return json({ error: "Not authenticated" }, { status: 401 });
       }
@@ -68,11 +68,11 @@ export const GET: RequestHandler = async ({
 
     if (!response.ok) {
       console.error(
-        `API request failed with status ${response.status}: ${response.statusText}`
+        `API request failed with status ${response.status}: ${response.statusText}`,
       );
       return json(
         { error: `API request failed with status ${response.status}` },
-        { status: response.status }
+        { status: response.status },
       );
     }
 
@@ -140,7 +140,7 @@ export const POST: RequestHandler = async ({
     if (!response.ok) {
       return json(
         { error: `API request failed with status ${response.status}` },
-        { status: response.status }
+        { status: response.status },
       );
     }
 

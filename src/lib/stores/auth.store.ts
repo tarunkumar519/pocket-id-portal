@@ -74,7 +74,7 @@ function createAuthStore() {
         document.cookie = `user_id=${user.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
         console.log(
           `Set user_id cookie with domain ${domain} and 30-day expiration:`,
-          user.sub
+          user.sub,
         );
 
         // Standard token expiration for the other cookies
@@ -85,10 +85,10 @@ function createAuthStore() {
 
         // Also store the user data in auth_user cookie
         document.cookie = `auth_user=${JSON.stringify(
-          user
+          user,
         )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax`;
         document.cookie = `auth_token=${JSON.stringify(
-          tokens
+          tokens,
         )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax`;
       }
 
