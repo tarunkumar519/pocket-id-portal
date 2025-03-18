@@ -75,7 +75,7 @@ PUBLIC_OIDC_ISSUER: URL of your OIDC provider
 PUBLIC_OIDC_CLIENT_ID: Your client ID
 OIDC_CLIENT_SECRET: Your client secret
 PUBLIC_OIDC_SCOPES: Space-separated list of scopes to request
-POCKET_ID_API_KEY: API key for server-side API calls (optional)
+POCKET_ID_API_KEY: API key for server-side API calls
 ```
 
 ### Project Structure
