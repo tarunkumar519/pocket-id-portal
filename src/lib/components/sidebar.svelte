@@ -2,124 +2,17 @@
   import { page } from "$app/stores";
   import { cn } from "$lib/utils";
   import { auth } from "$lib/stores/auth";
-  import { goto } from "$app/navigation";
   import { env } from "$env/dynamic/public";
   import { browser } from "$app/environment";
-  import { config } from "$lib/stores/portal-config.store";
+  import { LogoutService } from "$lib/services/logout-service";
 
   // Get the base URL from environment variables
   const baseUrl = env.PUBLIC_OIDC_ISSUER;
   const logoUrl = `${baseUrl}/api/application-configuration/logo?light=false`;
 
+  // Handle logout using the LogoutService
   async function handleLogout() {
-    try {
-      // Get the ID token from tokens in the auth store
-      const idToken = $auth.tokens?.id_token || "";
-
-      // Save user preferences before logout
-      const userConfig = localStorage.getItem("user_config");
-
-      // Clear local auth state first
-      auth.clearUser();
-
-      // Selectively clear storage instead of clearing everything
-      // Keep the user configuration preferences
-      const keysToKeep = ["user_config"];
-      const keysToRemove = [];
-
-      // Collect keys to remove from localStorage
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && !keysToKeep.includes(key)) {
-          keysToRemove.push(key);
-        }
-      }
-
-      // Remove the keys
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
-
-      // Restore user config if it existed
-      if (userConfig) {
-        localStorage.setItem("user_config", userConfig);
-      }
-
-      // Clear session storage completely
-      sessionStorage.clear();
-
-      // Clear cookies with proper path
-      document.cookie.split(";").forEach(function (c) {
-        const cookie = c.trim();
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-        document.cookie =
-          name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-      });
-
-      // For proper OIDC logout
-      if (browser && idToken) {
-        // Use standard OIDC end session endpoint with proper post logout redirect
-        const origin = window.location.origin;
-        const logoutUrl = `${baseUrl}/api/oidc/end-session`;
-        const redirectUri = `${origin}/login`;
-
-        // Include post_logout_redirect_uri and id_token_hint
-        let logoutUrlWithParams = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(redirectUri)}`;
-        logoutUrlWithParams += `&id_token_hint=${encodeURIComponent(idToken)}`;
-
-        // Redirect to the OIDC provider's logout endpoint
-        window.location.href = logoutUrlWithParams;
-      } else {
-        // No ID token or not in browser, just redirect to login page
-        if (browser) {
-          window.location.href = "/login";
-        }
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-
-      // Save user preferences before fallback logout
-      const userConfig = localStorage.getItem("user_config");
-
-      // Clear auth state
-      auth.clearUser();
-
-      // Selectively clear storage
-      const keysToKeep = ["user_config"];
-      const keysToRemove = [];
-
-      // Collect keys to remove from localStorage
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && !keysToKeep.includes(key)) {
-          keysToRemove.push(key);
-        }
-      }
-
-      // Remove the keys
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
-
-      // Restore user config if it existed
-      if (userConfig) {
-        localStorage.setItem("user_config", userConfig);
-      }
-
-      // Clear session storage
-      sessionStorage.clear();
-
-      // Clear cookies with proper path
-      document.cookie.split(";").forEach(function (c) {
-        const cookie = c.trim();
-        const eqPos = cookie.indexOf("=");
-        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
-        document.cookie =
-          name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-      });
-
-      // Redirect to login page directly
-      if (browser) {
-        window.location.href = "/login";
-      }
-    }
+    await LogoutService.logout();
   }
 </script>
 

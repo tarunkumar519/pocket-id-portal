@@ -72,6 +72,17 @@ function createAuthStore() {
         initialized: true,
       });
     },
+    getIdToken: () => {
+      let idToken: string | null = null;
+
+      // Use get() to access the store value without subscribing
+      const authState = get(authStore);
+      if (authState.tokens?.id_token) {
+        idToken = authState.tokens.id_token;
+      }
+
+      return idToken;
+    },
   };
 }
 
