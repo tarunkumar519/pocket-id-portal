@@ -2,14 +2,7 @@
   import { onMount } from "svelte";
   import { auth } from "$lib/stores/auth";
   import { Button } from "$lib/components/ui/button";
-  import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "$lib/components/ui/card";
+  import * as Card from "$lib/components/ui/card";
   import { Separator } from "$lib/components/ui/separator";
   import { env } from "$env/dynamic/public";
   import * as Select from "$lib/components/ui/select/index.js";
@@ -83,14 +76,14 @@
 
   <div class="grid gap-6">
     <!-- Profile Information -->
-    <Card>
-      <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
-        <CardDescription
-          >View your profile information from Pocket ID</CardDescription
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Profile Information</Card.Title>
+        <Card.Description
+          >View your profile information from Pocket ID</Card.Description
         >
-      </CardHeader>
-      <CardContent>
+      </Card.Header>
+      <Card.Content>
         <div class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -125,8 +118,8 @@
             {/if}
           </div>
         </div>
-      </CardContent>
-      <CardFooter>
+      </Card.Content>
+      <Card.Footer>
         <a
           href={`${env.PUBLIC_OIDC_ISSUER}/settings/account`}
           target="_blank"
@@ -134,24 +127,24 @@
         >
           <Button variant="default">Manage Profile in Pocket ID</Button>
         </a>
-      </CardFooter>
-    </Card>
+      </Card.Footer>
+    </Card.Root>
 
     <!-- Passkeys Management -->
-    <Card>
-      <CardHeader>
-        <CardTitle>Passkeys</CardTitle>
-        <CardDescription
-          >Manage your passkeys for passwordless authentication</CardDescription
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Passkeys</Card.Title>
+        <Card.Description
+          >Manage your passkeys for passwordless authentication</Card.Description
         >
-      </CardHeader>
-      <CardContent>
+      </Card.Header>
+      <Card.Content>
         <p class="text-sm">
           Passkeys provide a secure, passwordless way to authenticate. You can
           register and manage your passkeys directly in Pocket ID.
         </p>
-      </CardContent>
-      <CardFooter>
+      </Card.Content>
+      <Card.Footer>
         <a
           href={`${env.PUBLIC_OIDC_ISSUER}/settings/account`}
           target="_blank"
@@ -159,18 +152,18 @@
         >
           <Button variant="default">Manage Passkeys</Button>
         </a>
-      </CardFooter>
-    </Card>
+      </Card.Footer>
+    </Card.Root>
 
     <!-- Application Preferences -->
-    <Card>
-      <CardHeader>
-        <CardTitle>Portal Preferences</CardTitle>
-        <CardDescription
-          >Customize your experience in the Pocket ID Portal</CardDescription
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Portal Preferences</Card.Title>
+        <Card.Description
+          >Customize your experience in the Pocket ID Portal</Card.Description
         >
-      </CardHeader>
-      <CardContent>
+      </Card.Header>
+      <Card.Content>
         <div class="space-y-4">
           <div>
             <p class="text-sm font-medium mb-2">Theme Preference</p>
@@ -212,7 +205,7 @@
             </Select.Root>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </Card.Content>
+    </Card.Root>
   </div>
 </div>
