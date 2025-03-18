@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { run } from "svelte/legacy";
+
   import { onMount } from "svelte";
   import { config } from "$lib/stores/portal-config.store";
   import { browser } from "$app/environment";
@@ -52,7 +54,9 @@
   });
 
   // Update when config changes
-  $: if (browser && $config) {
-    applyTheme($config.theme);
-  }
+  $effect(() => {
+    if (browser && $config) {
+      applyTheme($config.theme);
+    }
+  });
 </script>
