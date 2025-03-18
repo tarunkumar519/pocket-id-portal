@@ -38,7 +38,7 @@ export const load: PageServerLoad<PageServerData> = async ({
             userId = userData.sub;
             console.log(
               "Found user ID in auth_user cookie with API key:",
-              userId,
+              userId
             );
 
             // Set a longer-lived user_id cookie for future requests
@@ -61,7 +61,7 @@ export const load: PageServerLoad<PageServerData> = async ({
 
       if (!authCookie) {
         console.error(
-          "No auth token found in cookies and no API key available",
+          "No auth token found in cookies and no API key available"
         );
         return {
           clients: { data: [] },
@@ -111,7 +111,7 @@ export const load: PageServerLoad<PageServerData> = async ({
                   headers: {
                     Authorization: `Bearer ${accessToken}`,
                   },
-                },
+                }
               );
 
               if (userInfoResponse.ok) {
@@ -130,7 +130,7 @@ export const load: PageServerLoad<PageServerData> = async ({
               } else {
                 console.error(
                   "Failed to fetch userinfo:",
-                  userInfoResponse.status,
+                  userInfoResponse.status
                 );
               }
             } catch (fetchErr) {
@@ -163,12 +163,12 @@ export const load: PageServerLoad<PageServerData> = async ({
       {
         method: "GET",
         headers,
-      },
+      }
     );
 
     if (!clientsResponse.ok) {
       console.error(
-        `Client API request failed with status ${clientsResponse.status}: ${clientsResponse.statusText}`,
+        `Client API request failed with status ${clientsResponse.status}: ${clientsResponse.statusText}`
       );
       return {
         clients: { data: [] },
@@ -190,17 +190,17 @@ export const load: PageServerLoad<PageServerData> = async ({
           {
             method: "GET",
             headers,
-          },
+          }
         );
 
         if (userGroupsResponse.ok) {
           userGroups = await userGroupsResponse.json();
           console.log(
-            `Fetched ${userGroups.length} user groups for user ${userId}`,
+            `Fetched ${userGroups.length} user groups for user ${userId}`
           );
         } else {
           console.warn(
-            `Failed to fetch user groups: ${userGroupsResponse.status}`,
+            `Failed to fetch user groups: ${userGroupsResponse.status}`
           );
           // Continue without user groups
         }
@@ -216,18 +216,110 @@ export const load: PageServerLoad<PageServerData> = async ({
       console.warn("No user ID available and not using API key");
     }
 
-    // Transform client data and sort alphabetically by name
+    // Check if we need to fetch client details for group restrictions
+    let clientDetailsList: Record<string, any> = {};
+
+    // Always fetch client details to get accurate group restrictions
+    try {
+      console.log(
+        "Fetching individual client details to check access restrictions"
+      );
+
+      // Fetch details for each client individually
+      for (const client of clientsData.data) {
+        try {
+          console.log(`Fetching details for client ${client.id}`);
+          const response = await fetch(
+            `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}`,
+            {
+              method: "GET",
+              headers,
+            }
+          );
+
+          if (response.ok) {
+            const clientDetails = await response.json();
+            console.log(
+              `Client ${client.id} details:`,
+              clientDetails.allowedUserGroups
+                ? `Has ${clientDetails.allowedUserGroups.length} allowed user groups`
+                : "No group restrictions"
+            );
+            clientDetailsList[client.id] = clientDetails;
+          } else {
+            console.warn(
+              `Failed to fetch details for client ${client.id}: ${response.status} ${response.statusText}`
+            );
+          }
+        } catch (err) {
+          console.warn(`Error fetching details for client ${client.id}:`, err);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching client details:", error);
+    }
+
+    // Transform client data and add group information with additional logging
     const clients = {
       data: clientsData.data
-        .map((client: any) => ({
-          ...client,
-          client_id: client.id,
-          description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
-          icon: client.hasLogo ? null : "📱",
-          logoUrl: client.hasLogo
-            ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
-            : null,
-        }))
+        .map((client: any) => {
+          // Base client data
+          const transformedClient = {
+            ...client,
+            client_id: client.id,
+            description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
+            icon: client.hasLogo ? null : "📱",
+            logoUrl: client.hasLogo
+              ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
+              : null,
+          };
+
+          // Add group information if available
+          const clientDetails = clientDetailsList[client.id];
+
+          // Log client details for debugging
+          console.log(`Processing client ${client.id} (${client.name}):`);
+
+          if (clientDetails) {
+            console.log(`- Has details: yes`);
+            if (
+              // Check for allowedUserGroups instead of allowedGroups
+              clientDetails.allowedUserGroups &&
+              Array.isArray(clientDetails.allowedUserGroups) &&
+              clientDetails.allowedUserGroups.length > 0
+            ) {
+              console.log(
+                `- Has allowed groups: ${clientDetails.allowedUserGroups.length}`
+              );
+
+              // Map group objects to their names
+              const groupNames = clientDetails.allowedUserGroups.map(
+                (group: { id: string; name: string; friendlyName: string }) => {
+                  // Get the display name from either friendlyName or name property
+                  const displayName = group.friendlyName || group.name;
+                  console.log(`  - Group: ${displayName} (ID: ${group.id})`);
+                  return displayName;
+                }
+              );
+
+              transformedClient.accessGroups = groupNames;
+              transformedClient.restrictedAccess = true;
+              console.log(
+                `- Setting restricted access with groups: ${groupNames.join(", ")}`
+              );
+            } else {
+              console.log(`- No allowed groups found, setting to "Everyone"`);
+              transformedClient.accessGroups = ["Everyone"];
+              transformedClient.restrictedAccess = false;
+            }
+          } else {
+            console.log(`- No client details found, setting to "Everyone"`);
+            transformedClient.accessGroups = ["Everyone"];
+            transformedClient.restrictedAccess = false;
+          }
+
+          return transformedClient;
+        })
         .sort((a: any, b: any) => {
           // Sort by name, case-insensitive
           return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
@@ -236,7 +328,7 @@ export const load: PageServerLoad<PageServerData> = async ({
 
     console.log(
       "Clients fetched and sorted successfully:",
-      clients.data.length,
+      clients.data.length
     );
 
     return {

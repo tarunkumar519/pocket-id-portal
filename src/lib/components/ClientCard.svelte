@@ -2,6 +2,7 @@
   import { browser } from "$app/environment";
   import { env } from "$env/dynamic/public";
   import * as Card from "$lib/components/ui/card";
+  import { Badge } from "$lib/components/ui/badge";
 
   // Props for the component
   export let client: {
@@ -13,6 +14,8 @@
     icon: string | null;
     last_used: Date | string;
     logoError?: boolean;
+    accessGroups?: string[];
+    restrictedAccess?: boolean;
   };
 
   // Handle image error
@@ -54,6 +57,23 @@
     </div>
 
     <Card.Title class="text-lg text-center">{client.name}</Card.Title>
+
+    <!-- Access Group Badge -->
+    {#if client.accessGroups && client.accessGroups.length > 0}
+      <div class="flex flex-wrap justify-center gap-1">
+        {#each client.accessGroups.slice(0, 1) as group}
+          <Badge
+            variant={client.restrictedAccess ? "secondary" : "outline"}
+            class="text-xs"
+          >
+            {group}
+            {#if client.accessGroups.length > 1}
+              +{client.accessGroups.length - 1}
+            {/if}
+          </Badge>
+        {/each}
+      </div>
+    {/if}
   </Card.Header>
 
   <Card.Footer class="mt-auto pt-2">

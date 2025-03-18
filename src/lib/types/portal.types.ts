@@ -15,7 +15,8 @@ export interface Client {
   icon?: string | null;
   last_used?: string | Date;
   logoError?: boolean;
-  // Add any other properties your clients have
+  accessGroups?: string[];
+  restrictedAccess?: boolean;
 }
 
 export interface PageServerData {
