@@ -17,7 +17,8 @@ RUN cp .env.example .env && \
     echo "PUBLIC_OIDC_CLIENT_ID=dummy-client-id" >> .env && \
     echo "OIDC_CLIENT_SECRET=dummy-client-secret" >> .env && \
     echo "PUBLIC_OIDC_SCOPES=openid profile email" >> .env && \
-    echo "POCKET_ID_API_KEY=dummy-api-key" >> .env
+    echo "POCKET_ID_API_KEY=dummy-api-key" >> .env && \ 
+    echo "PUBLIC_APP_URL=https://example.com" >> .env
 
 RUN npm run build
 
