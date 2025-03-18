@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { auth } from "$lib/stores/auth";
+  import { auth } from "$lib/stores/auth.store";
   import { config, type UserConfig } from "$lib/stores/portal-config.store";
   import { Button } from "$lib/components/ui/button";
   import * as Card from "$lib/components/ui/card";

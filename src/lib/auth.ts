@@ -1,6 +1,7 @@
 // OIDC Authentication library for Pocket ID Portal
 import { env } from "$env/dynamic/public";
 import type { UserInfo, OIDCConfig, TokenResponse } from "$lib/types";
+import { generateOidcEndpoints } from "$lib/utils/oidc-urls.util";
 
 // Generate a random state for OIDC requests
 export function generateState(): string {
@@ -18,32 +19,42 @@ export function generateNonce(): string {
   );
 }
 
-// OIDC configuration from environment variables
-const oidcConfig: OIDCConfig = {
-  issuer: env.PUBLIC_OIDC_ISSUER,
-  authorization_endpoint: env.PUBLIC_OIDC_AUTH_ENDPOINT,
-  token_endpoint: env.PUBLIC_OIDC_TOKEN_ENDPOINT,
-  userinfo_endpoint: env.PUBLIC_OIDC_USERINFO_ENDPOINT,
-  jwks_uri: env.PUBLIC_OIDC_JWKS_URI,
-  scopes_supported: env.PUBLIC_OIDC_SCOPES.split(" "),
-  response_types_supported: [
-    "code",
-    "token",
-    "id_token",
-    "code token",
-    "code id_token",
-    "token id_token",
-    "code token id_token",
-  ],
-  grant_types_supported: [
-    "authorization_code",
-    "implicit",
-    "refresh_token",
-    "client_credentials",
-  ],
-  subject_types_supported: ["public", "pairwise"],
-  id_token_signing_alg_values_supported: ["RS256", "ES256", "HS256"],
-};
+// Generate OIDC configuration from the issuer URL
+function getOidcConfig(): OIDCConfig {
+  const endpoints = generateOidcEndpoints(env.PUBLIC_OIDC_ISSUER || "");
+
+  // Create the OIDC config using the generated endpoints
+  return {
+    issuer: endpoints.issuer,
+    authorization_endpoint: endpoints.authorizationEndpoint,
+    token_endpoint: endpoints.tokenEndpoint,
+    userinfo_endpoint: endpoints.userinfoEndpoint,
+    jwks_uri: endpoints.jwksUri,
+    scopes_supported: (env.PUBLIC_OIDC_SCOPES || "openid profile email").split(
+      " "
+    ),
+    response_types_supported: [
+      "code",
+      "token",
+      "id_token",
+      "code token",
+      "code id_token",
+      "token id_token",
+      "code token id_token",
+    ],
+    grant_types_supported: [
+      "authorization_code",
+      "implicit",
+      "refresh_token",
+      "client_credentials",
+    ],
+    subject_types_supported: ["public", "pairwise"],
+    id_token_signing_alg_values_supported: ["RS256", "ES256", "HS256"],
+  };
+}
+
+// Get the OIDC configuration
+const oidcConfig = getOidcConfig();
 
 // Build an authorization URL
 export function buildAuthorizationUrl(

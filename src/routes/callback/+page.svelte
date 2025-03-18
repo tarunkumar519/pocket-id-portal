@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { storeAuthState } from "$lib/auth";
-  import { auth } from "$lib/stores/auth";
+  import { auth } from "$lib/stores/auth.store.js";
 
   export let data;
 

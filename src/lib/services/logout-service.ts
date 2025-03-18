@@ -1,6 +1,6 @@
 import { browser } from "$app/environment";
-import { auth } from "$lib/stores/auth";
-import { clearAuthState } from "$lib/auth"; // Add this import
+import { auth } from "$lib/stores/auth.store";
+import { clearAuthState } from "$lib/auth";
 import { env } from "$env/dynamic/public";
 
 /**

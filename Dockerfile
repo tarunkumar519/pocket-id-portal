@@ -10,10 +10,6 @@ COPY . .
 # Include all required environment variables from .env.example
 RUN cp .env.example .env && \
     echo "PUBLIC_OIDC_ISSUER=https://example.com" >> .env && \
-    echo "PUBLIC_OIDC_AUTH_ENDPOINT=https://example.com/authorize" >> .env && \
-    echo "PUBLIC_OIDC_TOKEN_ENDPOINT=https://example.com/api/oidc/token" >> .env && \
-    echo "PUBLIC_OIDC_USERINFO_ENDPOINT=https://example.com/api/oidc/userinfo" >> .env && \
-    echo "PUBLIC_OIDC_JWKS_URI=https://example.com/.well-known/jwks.json" >> .env && \
     echo "PUBLIC_OIDC_CLIENT_ID=dummy-client-id" >> .env && \
     echo "OIDC_CLIENT_SECRET=dummy-client-secret" >> .env && \
     echo "PUBLIC_OIDC_SCOPES=openid profile email" >> .env && \

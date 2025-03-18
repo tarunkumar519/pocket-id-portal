@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { auth } from "$lib/stores/auth";
+  import { auth } from "$lib/stores/auth.store";
   import ClientCard from "$lib/components/ClientCard.svelte";
   import * as Pagination from "$lib/components/ui/pagination/index.js";
   import { Badge } from "$lib/components/ui/badge";

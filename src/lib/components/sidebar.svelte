@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import { cn } from "$lib/utils";
-  import { auth } from "$lib/stores/auth";
+  import { auth } from "$lib/stores/auth.store";
   import { env } from "$env/dynamic/public";
   import { browser } from "$app/environment";
   import { LogoutService } from "$lib/services/logout-service";

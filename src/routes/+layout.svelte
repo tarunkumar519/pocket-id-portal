@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
-  import { auth } from "$lib/stores/auth";
+  import { auth } from "$lib/stores/auth.store";
   import { config } from "$lib/stores/portal-config.store";
   import Sidebar from "$lib/components/sidebar.svelte";
   import { browser } from "$app/environment";
