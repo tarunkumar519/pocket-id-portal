@@ -4,6 +4,7 @@
   import { auth } from "$lib/stores/auth";
   import { goto } from "$app/navigation";
   import { env } from "$env/dynamic/public";
+  import { browser } from "$app/environment";
 
   // Get the base URL from environment variables
   const baseUrl = env.PUBLIC_OIDC_ISSUER;
@@ -54,17 +55,24 @@
       });
 
       // For proper OIDC logout
-      const logoutUrl = `${baseUrl}/api/oidc/end-session`;
-      const redirectUri = window.location.origin + "/login";
+      if (browser && idToken) {
+        // Use standard OIDC end session endpoint with proper post logout redirect
+        const origin = window.location.origin;
+        const logoutUrl = `${baseUrl}/api/oidc/end-session`;
+        const redirectUri = `${origin}/login`;
 
-      // Include post_logout_redirect_uri and id_token_hint if available
-      let logoutUrlWithParams = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(redirectUri)}`;
-      if (idToken) {
+        // Include post_logout_redirect_uri and id_token_hint
+        let logoutUrlWithParams = `${logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(redirectUri)}`;
         logoutUrlWithParams += `&id_token_hint=${encodeURIComponent(idToken)}`;
-      }
 
-      // Redirect to the OIDC provider's logout endpoint
-      window.location.href = logoutUrlWithParams;
+        // Redirect to the OIDC provider's logout endpoint
+        window.location.href = logoutUrlWithParams;
+      } else {
+        // No ID token or not in browser, just redirect to login page
+        if (browser) {
+          window.location.href = "/login";
+        }
+      }
     } catch (error) {
       console.error("Error during logout:", error);
 
@@ -106,8 +114,10 @@
           name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
       });
 
-      // Redirect to login page using SvelteKit navigation
-      goto("/login");
+      // Redirect to login page directly
+      if (browser) {
+        window.location.href = "/login";
+      }
     }
   }
 </script>
