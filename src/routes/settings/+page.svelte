@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import { auth } from "$lib/stores/auth.store";
   import { config, type UserConfig } from "$lib/stores/portal-config.store";
   import { Button } from "$lib/components/ui/button";
@@ -8,17 +7,26 @@
   import { env } from "$env/dynamic/public";
   import * as Select from "$lib/components/ui/select/index.js";
   import { Badge } from "$lib/components/ui/badge";
-  import { UserService } from "$lib/services/user-service";
-  import type { UserGroup, ApiError } from "$lib/types";
-  import { goto } from "$app/navigation";
+  import type { UserGroup } from "$lib/types";
+
+  interface Props {
+    // Get data from the server load function
+    data: {
+      userGroups: UserGroup[];
+      status: "success" | "error";
+      error: string | null;
+    };
+  }
+
+  let { data }: Props = $props();
 
   // User profile data
   let user = $derived($auth.user);
 
-  // User groups state
-  let userGroups: UserGroup[] = $state([]);
-  let groupsError: ApiError = $state(null);
-  let loading = $state(true);
+  // Get user groups from server-loaded data
+  let userGroups: UserGroup[] = $derived(data.userGroups || []);
+  let groupsError = $derived(data.status === "error" ? data.error : null);
+  let loading = $derived(false);
 
   // Use the config store values
   let themePreference = $state($config.theme);
@@ -36,31 +44,6 @@
     { value: "dashboard", label: "Dashboard" },
     { value: "settings", label: "Settings" },
   ] as const;
-
-  onMount(async () => {
-    try {
-      if (!$auth.user || !$auth.user.sub) {
-        groupsError = "User ID not found";
-        loading = false;
-        return;
-      }
-
-      // Use UserService directly instead of pocketIdService
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      userGroups = await UserService.fetchUserGroups(
-        $auth.user.sub,
-        fetch,
-        headers
-      );
-      loading = false;
-    } catch (error) {
-      console.error("Error fetching user groups:", error);
-      groupsError = error instanceof Error ? error.message : String(error);
-      loading = false;
-    }
-  });
 
   // Update theme preference when selected
   function updateTheme(value: UserConfig["theme"]) {
