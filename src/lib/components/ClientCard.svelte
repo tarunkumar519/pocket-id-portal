@@ -63,8 +63,11 @@
       <div class="flex flex-wrap justify-center gap-1">
         {#each client.accessGroups.slice(0, 1) as group}
           <Badge
-            variant={client.restrictedAccess ? "secondary" : "outline"}
-            class="text-xs"
+            class={`text-xs border ${
+              client.restrictedAccess
+                ? "border-destructive text-destructive bg-destructive/10"
+                : "border-success text-success bg-success/10"
+            }`}
           >
             {group}
             {#if client.accessGroups.length > 1}
