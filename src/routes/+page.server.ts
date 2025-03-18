@@ -1,113 +1,58 @@
-import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { env } from "$env/dynamic/private";
-import { env as publicEnv } from "$env/dynamic/public";
+import { OIDCClientService } from "$lib/services/oidc-client-service";
+import type { PageServerData } from "$lib/types";
+import { UserService } from "$lib/services/user-service";
 
-export const load: PageServerLoad = async ({ fetch, cookies }) => {
+/**
+ * Server load function for fetching client data
+ */
+export const load: PageServerLoad<PageServerData> = async ({
+  fetch,
+  cookies,
+}) => {
   try {
-    // Prepare headers with API key from environment
-    const headers: Record<string, string> = {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-    };
+    // Get authentication headers
+    const headers = await OIDCClientService.getAuthHeaders(cookies);
 
-    // Use API key from environment
-    if (env.POCKET_ID_API_KEY) {
-      headers["X-API-Key"] = env.POCKET_ID_API_KEY;
-      console.log("Using API key for authentication");
-    }
-    // Fallback to token auth if no API key
-    else {
-      const authCookie = cookies.get("auth_token");
+    // Get user ID if available
+    const userId = UserService.getUserIdFromCookies(cookies);
 
-      if (!authCookie) {
-        console.error(
-          "No auth token found in cookies and no API key available",
-        );
-        return {
-          clients: [],
-          status: "error",
-          error: "Not authenticated",
-        };
-      }
+    // Fetch basic client data
+    const clientsData = await OIDCClientService.fetchClients(fetch, headers);
 
+    // Fetch user groups if we have a user ID
+    let userGroups = [];
+    if (userId) {
       try {
-        const authData = JSON.parse(authCookie);
-        const accessToken = authData.access_token;
-
-        if (accessToken) {
-          headers["Authorization"] = `Bearer ${accessToken}`;
-          console.log(`Using access token for authentication`);
-        } else {
-          console.error("No access token found in auth cookie");
-          return {
-            clients: [],
-            status: "error",
-            error: "Invalid auth token",
-          };
-        }
-      } catch (e) {
-        console.error("Error parsing auth cookie:", e);
-        return {
-          clients: [],
-          status: "error",
-          error: "Invalid auth token format",
-        };
+        userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
+      } catch (error) {
+        console.warn("Error fetching user groups:", error);
+        // Continue without groups
       }
     }
 
-    // Make the API request directly from the server
-    const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients`;
-    const response = await fetch(apiUrl, {
-      method: "GET",
-      headers,
-    });
-
-    if (!response.ok) {
-      console.error(
-        `API request failed with status ${response.status}: ${response.statusText}`,
+    // Process clients with group access information
+    const processedClients =
+      await OIDCClientService.processClientsWithGroupAccess(
+        clientsData,
+        fetch,
+        headers,
+        userGroups
       );
-      return {
-        clients: [],
-        status: "error",
-        error: `API request failed with status ${response.status}`,
-      };
-    }
-
-    const clientsData = await response.json();
-
-    // Transform client data to include logo URLs and other needed properties
-    const clients = {
-      ...clientsData,
-      data: clientsData.data.map(
-        (client: { id: string; isPublic: boolean; hasLogo: boolean }) => ({
-          ...client,
-          client_id: client.id,
-          description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
-          icon: client.hasLogo ? null : "📱",
-          logoUrl: client.hasLogo
-            ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
-            : null,
-          last_used: new Date().toISOString(),
-        }),
-      ),
-    };
-
-    console.log(
-      "Clients fetched and transformed successfully:",
-      clients.data.length,
-    );
 
     return {
-      clients,
+      clients: { data: processedClients },
+      userGroups,
       status: "success",
+      error: null,
     };
-  } catch (e) {
-    console.error("Error in server load function:", e);
+  } catch (error) {
+    console.error("Error in server load function:", error);
     return {
-      clients: [],
+      clients: { data: [] },
+      userGroups: [],
       status: "error",
-      error: e instanceof Error ? e.message : "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 };
