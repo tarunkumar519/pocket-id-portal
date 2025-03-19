@@ -9,6 +9,7 @@
     import { Badge } from "$lib/components/ui/badge";
     import { Label } from "$lib/components/ui/label/index.js";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
+    import { Check, Shield, Users } from "@lucide/svelte";
     import type { UserGroup } from "$lib/types";
 
     interface Props {
@@ -98,7 +99,9 @@
 
                     <!-- User Groups Section -->
                     <div>
-                        <p class="text-sm font-medium mb-2">Groups</p>
+                        <p class="text-sm font-medium mb-2">
+                            Groups ({userGroups.length})
+                        </p>
                         {#if loading}
                             <p class="text-sm text-muted-foreground">
                                 Loading groups...
@@ -108,12 +111,30 @@
                                 Error: {groupsError}
                             </p>
                         {:else if userGroups.length > 0}
-                            <div class="flex flex-wrap gap-2">
-                                {#each userGroups as group}
-                                    <Badge variant="secondary"
-                                        >{group.name}</Badge
+                            <div
+                                class="inline-flex flex-wrap gap-1.5 border rounded-md p-2 bg-muted/20"
+                            >
+                                <div
+                                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+                                >
+                                    {#each userGroups as group (group.name)}
+                                        <Badge
+                                            variant="secondary"
+                                            class="justify-center py-1.5 px-2 text-x"
+                                        >
+                                            <Users class="h-3 w-3" />
+                                            <span>{group.name}</span>
+                                        </Badge>
+                                    {/each}
+                                </div>
+                                {#if userGroups.length > 10}
+                                    <Badge
+                                        variant="outline"
+                                        class="text-xs opacity-80"
                                     >
-                                {/each}
+                                        +{userGroups.length - 10} more
+                                    </Badge>
+                                {/if}
                             </div>
                         {:else}
                             <p class="text-sm text-muted-foreground">
