@@ -44,29 +44,111 @@ export class UserService {
     // Generate cache key
     const cacheKey = `user_groups_${userId}`;
 
-    // Check cache first
-    const cachedGroups = CacheService.get<any[]>(cacheKey);
-    if (cachedGroups) {
-      return cachedGroups;
-    }
+    // IMPORTANT: Clear the cache key first to ensure we get fresh data
+    CacheService.clear(cacheKey);
 
+    console.log(`Fetching groups for user ${userId} from API`);
     const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/users/${userId}/groups`;
 
-    const response = await fetch(apiUrl, {
-      method: "GET",
-      headers,
-    });
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers,
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch user groups: ${response.status}`);
+      if (!response.ok) {
+        console.error(`API returned status ${response.status} for user groups`);
+        // Check if we got a rate limit error
+        if (response.status === 429) {
+          console.log("Rate limited, trying once more with delay");
+          // Wait 2 seconds and try again
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          return this.fetchUserGroups(userId, fetch, headers);
+        }
+        throw new Error(`Failed to fetch user groups: ${response.status}`);
+      }
+
+      // Use response.clone() to be able to read the body multiple times
+      const responseClone = response.clone();
+
+      // Try to parse as JSON directly first
+      try {
+        const data = await response.json();
+
+        // Check different possible formats of the response
+        let groups;
+        if (data.data && Array.isArray(data.data)) {
+          groups = data.data;
+        } else if (Array.isArray(data)) {
+          groups = data;
+        } else if (data.groups && Array.isArray(data.groups)) {
+          groups = data.groups;
+        } else {
+          console.warn(
+            "Unexpected data structure for user groups:",
+            Object.keys(data)
+          );
+          groups = [];
+        }
+
+        // Ensure each group has the expected properties
+        const formattedGroups = groups.map((group) => {
+          // Make sure we have at least id and name
+          return {
+            id: group.id || group._id || group.groupId || "unknown",
+            name: group.name || group.groupName || group.id || "Unknown Group",
+            friendlyName:
+              group.friendlyName || group.displayName || group.name || "",
+            description: group.description || "",
+          };
+        });
+
+        // Only cache if we have groups
+        if (formattedGroups.length > 0) {
+          CacheService.set(cacheKey, formattedGroups, this.USER_GROUPS_TTL);
+        }
+
+        return formattedGroups;
+      } catch (e) {
+        console.error("Error parsing JSON response:", e);
+
+        // Fallback to text parsing
+        const responseText = await responseClone.text();
+
+        try {
+          const parsedData = JSON.parse(responseText);
+          let groups = [];
+
+          if (parsedData.data && Array.isArray(parsedData.data)) {
+            groups = parsedData.data;
+          } else if (Array.isArray(parsedData)) {
+            groups = parsedData;
+          } else if (parsedData.groups && Array.isArray(parsedData.groups)) {
+            groups = parsedData.groups;
+          }
+
+          const formattedGroups = groups.map((group) => ({
+            id: group.id || group._id || "unknown",
+            name: group.name || "Unknown Group",
+            friendlyName: group.friendlyName || group.name || "",
+            description: group.description || "",
+          }));
+
+          if (formattedGroups.length > 0) {
+            CacheService.set(cacheKey, formattedGroups, this.USER_GROUPS_TTL);
+          }
+
+          return formattedGroups;
+        } catch (jsonError) {
+          console.error("Failed to parse response as JSON:", jsonError);
+          throw new Error("Invalid API response format");
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching groups for user ${userId}:`, error);
+
+      // Don't cache errors this time - let's try again next time
+      return [];
     }
-
-    const groupsData = await response.json();
-    const groups = groupsData.data || [];
-
-    // Store in cache
-    CacheService.set(cacheKey, groups, this.USER_GROUPS_TTL);
-
-    return groups;
   }
 }

@@ -1,6 +1,7 @@
 import type { PageServerLoad } from "./$types";
 import { UserService } from "$lib/services/user-service";
 import { OIDCClientService } from "$lib/services/oidc-client-service";
+import { CacheService } from "$lib/services/cache-service";
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
   try {
@@ -17,9 +18,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     // If we have a user ID, fetch their groups
     if (userId) {
       try {
-        console.log(`Fetching groups for user ${userId} in settings page`);
+        // Fetch fresh data every time for settings page
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
-        console.log(`Found ${userGroups.length} user groups for settings page`);
       } catch (err) {
         console.warn("Error fetching user groups for settings page:", err);
         error =
