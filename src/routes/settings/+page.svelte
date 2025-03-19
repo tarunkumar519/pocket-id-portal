@@ -9,7 +9,7 @@
     import { Badge } from "$lib/components/ui/badge";
     import { Label } from "$lib/components/ui/label/index.js";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-    import { Check, Shield, Users } from "@lucide/svelte";
+    import { Users } from "@lucide/svelte";
     import type { UserGroup } from "$lib/types";
 
     interface Props {
