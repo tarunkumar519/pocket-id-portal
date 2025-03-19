@@ -4,6 +4,7 @@
   import * as Pagination from "$lib/components/ui/pagination/index.js";
   import { Badge } from "$lib/components/ui/badge";
   import type { Client, PageServerData, UserGroup } from "$lib/types";
+  import { onMount } from "svelte";
 
   interface Props {
     // Get data from the server load function - now includes filtered clients and user groups
@@ -29,6 +30,34 @@
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage
     );
+  }
+
+  // Default to 3 columns, but we'll update this based on screen size
+  let gridColumns = $state(3);
+
+  onMount(() => {
+    // Update columns based on screen size
+    updateGridColumns();
+
+    // Listen for window resize to update columns
+    window.addEventListener("resize", updateGridColumns);
+
+    return () => {
+      window.removeEventListener("resize", updateGridColumns);
+    };
+  });
+
+  function updateGridColumns() {
+    // Determine number of columns based on screen width
+    if (window.innerWidth >= 1280) {
+      gridColumns = 4; // xl screens
+    } else if (window.innerWidth >= 1024) {
+      gridColumns = 3; // lg screens
+    } else if (window.innerWidth >= 768) {
+      gridColumns = 2; // md screens
+    } else {
+      gridColumns = 1; // sm screens
+    }
   }
 </script>
 
@@ -122,9 +151,9 @@
                 <div
                   class="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-8 mx-auto max-w-5xl w-full"
                 >
-                  {#each getPaginatedClients(currentPage) as client}
+                  {#each getPaginatedClients(currentPage) as client, i}
                     <div class="min-h-[180px] min-w-[180px]">
-                      <ClientCard {client} />
+                      <ClientCard {client} index={i} columns={gridColumns} />
                     </div>
                   {/each}
                 </div>
