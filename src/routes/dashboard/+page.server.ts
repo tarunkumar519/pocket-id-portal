@@ -21,16 +21,14 @@ export const load: PageServerLoad<PageServerData> = async ({
       console.warn("No user ID found in cookies");
     }
 
-    // Fetch client data (applications the user has access to)
+    // Fetch client data (applications the user has access to) - now with caching
     const clientsData = await OIDCClientService.fetchClients(fetch, headers);
 
-    // Fetch user groups if we have a user ID
+    // Fetch user groups if we have a user ID - now with caching
     let userGroups = [];
     if (userId) {
       try {
-        console.log(`Fetching groups for user ${userId}`);
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
-        console.log(`Found ${userGroups.length} user groups`);
       } catch (error) {
         console.warn("Error fetching user groups:", error);
         // Continue without groups
@@ -51,7 +49,6 @@ export const load: PageServerLoad<PageServerData> = async ({
       ...client,
       // Add any dashboard-specific properties here
       dashboardUrl: `/dashboard/apps/${client.client_id}`,
-      // You could add other client-specific dashboard data here
     }));
 
     return {

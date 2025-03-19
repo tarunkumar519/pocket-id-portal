@@ -1,11 +1,16 @@
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 import type { Client, ClientResponse } from "$lib/types/portal.types";
+import { CacheService } from "./cache-service";
 
 /**
  * Service for interacting with the Pocket ID API
  */
 export class OIDCClientService {
+  // Cache TTLs (in milliseconds)
+  private static CLIENT_LIST_TTL = 5 * 60 * 1000; // 5 minutes
+  private static CLIENT_DETAILS_TTL = 10 * 60 * 1000; // 10 minutes
+
   /**
    * Get authentication headers, either from API key or access token
    */
@@ -52,6 +57,15 @@ export class OIDCClientService {
     fetch: typeof globalThis.fetch,
     headers: Record<string, string>
   ): Promise<ClientResponse> {
+    // Generate cache key based on headers
+    const cacheKey = `clients_all`;
+
+    // Check cache first
+    const cachedData = CacheService.get<ClientResponse>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients`;
 
     // Make the API request
@@ -68,10 +82,15 @@ export class OIDCClientService {
     const clientsData = await response.json();
 
     // Transform client data
-    return {
+    const transformedData = {
       ...clientsData,
       data: clientsData.data.map(this.transformClient),
     };
+
+    // Store in cache
+    CacheService.set(cacheKey, transformedData, this.CLIENT_LIST_TTL);
+
+    return transformedData;
   }
 
   /**
@@ -82,6 +101,15 @@ export class OIDCClientService {
     fetch: typeof globalThis.fetch,
     headers: Record<string, string>
   ): Promise<any> {
+    // Generate cache key
+    const cacheKey = `client_details_${clientId}`;
+
+    // Check cache first
+    const cachedData = CacheService.get<any>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
     const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${clientId}`;
 
     const response = await fetch(apiUrl, {
@@ -93,7 +121,12 @@ export class OIDCClientService {
       throw new Error(`Failed to fetch client details: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+
+    // Store in cache
+    CacheService.set(cacheKey, data, this.CLIENT_DETAILS_TTL);
+
+    return data;
   }
 
   /**
