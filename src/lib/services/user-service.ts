@@ -1,5 +1,6 @@
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
+import type { UserGroup } from "$lib/types";
 import { CacheService } from "./cache-service";
 
 /**
@@ -92,16 +93,11 @@ export class UserService {
         }
 
         // Ensure each group has the expected properties
-        const formattedGroups = groups.map((group) => {
-          // Make sure we have at least id and name
-          return {
-            id: group.id || group._id || group.groupId || "unknown",
-            name: group.name || group.groupName || group.id || "Unknown Group",
-            friendlyName:
-              group.friendlyName || group.displayName || group.name || "",
-            description: group.description || "",
-          };
-        });
+        const formattedGroups = groups.map((group: UserGroup) => ({
+          id: group.id || "unknown",
+          name: group.name || "Unknown Group",
+          description: group.description || "",
+        }));
 
         // Only cache if we have groups
         if (formattedGroups.length > 0) {
@@ -127,10 +123,9 @@ export class UserService {
             groups = parsedData.groups;
           }
 
-          const formattedGroups = groups.map((group) => ({
-            id: group.id || group._id || "unknown",
+          const formattedGroups = groups.map((group: UserGroup) => ({
+            id: group.id || "unknown",
             name: group.name || "Unknown Group",
-            friendlyName: group.friendlyName || group.name || "",
             description: group.description || "",
           }));
 

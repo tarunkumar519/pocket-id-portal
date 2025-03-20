@@ -17,6 +17,7 @@ export interface Client {
   logoError?: boolean;
   accessGroups?: string[];
   restrictedAccess?: boolean;
+  hasAccess?: boolean;
 }
 
 export interface PageServerData {

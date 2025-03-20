@@ -160,6 +160,9 @@ export class OIDCClientService {
     userGroups: any[] = []
   ): Promise<Client[]> {
     try {
+      // Extract user group IDs for easier comparison
+      const userGroupIds = userGroups.map((group) => group.id);
+
       // Get details for all clients
       const clientDetailsList: Record<string, any> = {};
       for (const client of clientsData.data) {
@@ -175,8 +178,8 @@ export class OIDCClientService {
         }
       }
 
-      // Transform clients with group access information
-      return clientsData.data
+      // Transform clients with group access information and filter based on access
+      const accessibleClients = clientsData.data
         .map((client: any) => {
           // Base client data with standard transformations
           const transformedClient = this.transformClient(client);
@@ -184,8 +187,14 @@ export class OIDCClientService {
           // Add group information if available
           const clientDetails = clientDetailsList[client.id];
 
+          // Check if this client has group restrictions
           if (clientDetails?.allowedUserGroups?.length > 0) {
-            // Map group objects to their names
+            // Get the allowed group IDs for this client
+            const allowedGroupIds = clientDetails.allowedUserGroups.map(
+              (group: { id: string }) => group.id
+            );
+
+            // Map group objects to their names for display
             const groupNames = clientDetails.allowedUserGroups.map(
               (group: { id: string; name: string; friendlyName: string }) => {
                 return group.friendlyName || group.name;
@@ -194,17 +203,43 @@ export class OIDCClientService {
 
             transformedClient.accessGroups = groupNames;
             transformedClient.restrictedAccess = true;
+
+            // Check if user has access to this client through their groups
+            const hasAccess = userGroupIds.some((groupId) =>
+              allowedGroupIds.includes(groupId)
+            );
+
+            // Set a hasAccess property for filtering
+            transformedClient.hasAccess = hasAccess;
+
+            if (!hasAccess) {
+              console.log(
+                `User does not have access to client ${client.name} (${client.id})`
+              );
+            }
           } else {
+            // No group restrictions, everyone has access
             transformedClient.accessGroups = ["Everyone"];
             transformedClient.restrictedAccess = false;
+            transformedClient.hasAccess = true;
           }
 
           return transformedClient;
         })
+        // Filter out clients the user doesn't have access to
+        .filter(
+          (client: Client & { hasAccess?: boolean }) =>
+            client.hasAccess === true
+        )
         .sort((a: Client, b: Client) => {
           // Sort alphabetically by name
           return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
         });
+
+      console.log(
+        `Filtered to ${accessibleClients.length} accessible clients for user`
+      );
+      return accessibleClients;
     } catch (error) {
       console.error("Error processing clients with group access:", error);
       throw error;
