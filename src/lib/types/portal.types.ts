@@ -18,6 +18,8 @@ export interface Client {
   accessGroups?: string[];
   restrictedAccess?: boolean;
   hasAccess?: boolean;
+  callback_urls?: string[]; // Add this property to match what's used in ClientCard.svelte
+  dashboardUrl?: string; // Added for dashboard-specific URLs
 }
 
 export interface PageServerData {

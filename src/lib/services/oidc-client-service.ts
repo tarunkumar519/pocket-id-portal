@@ -1,3 +1,4 @@
+import { getLogoUrl } from "$lib/utils/oidc-urls.util";
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 import type { Client, ClientResponse } from "$lib/types/portal.types";
@@ -123,6 +124,29 @@ export class OIDCClientService {
 
     const data = await response.json();
 
+    // Normalize callback URLs field to ensure we have a consistent property
+    if (!data.callback_urls) {
+      data.callback_urls = data.callbackURLs || data.redirect_uris || [];
+    }
+
+    // Ensure callback URLs are in array format
+    if (data.callback_urls && !Array.isArray(data.callback_urls)) {
+      if (typeof data.callback_urls === "string") {
+        data.callback_urls = [data.callback_urls];
+      } else {
+        data.callback_urls = [];
+      }
+    }
+
+    // Also handle callbackURLs format
+    if (data.callbackURLs && !Array.isArray(data.callbackURLs)) {
+      if (typeof data.callbackURLs === "string") {
+        data.callbackURLs = [data.callbackURLs];
+      } else {
+        data.callbackURLs = [];
+      }
+    }
+
     // Store in cache
     CacheService.set(cacheKey, data, this.CLIENT_DETAILS_TTL);
 
@@ -130,23 +154,26 @@ export class OIDCClientService {
   }
 
   /**
-   * Transform a client object to include additional properties
+   * Transform client data from API format to our application format
    */
-  static transformClient(client: {
-    id: string;
-    isPublic: boolean;
-    hasLogo: boolean;
-    name: string;
-  }): Client {
+  static transformClient(client: any): Client {
+    // Use the logo URL utility to generate the proper logo URL
+    const hasLogo = Boolean(client.hasLogo) || Boolean(client.logo_uri);
+    const logoUrl = hasLogo
+      ? getLogoUrl(publicEnv.PUBLIC_OIDC_ISSUER, client.id || client.client_id)
+      : null;
+
     return {
-      ...client,
-      client_id: client.id,
-      description: `OAuth2 Client${client.isPublic ? " (Public)" : ""}`,
-      icon: client.hasLogo ? null : "📱",
-      logoUrl: client.hasLogo
-        ? `${publicEnv.PUBLIC_OIDC_ISSUER}/api/oidc/clients/${client.id}/logo`
-        : null,
-      last_used: new Date().toISOString(),
+      id: client.id || client.client_id,
+      client_id: client.client_id,
+      name: client.client_name || client.name || client.client_id,
+      description: client.description || "",
+      isPublic: client.isPublic || client.is_public || false,
+      hasLogo: hasLogo,
+      logoUrl: logoUrl,
+      icon: client.icon || null,
+      callback_urls: client.callbackURLs || client.redirect_uris || [],
+      logoError: false, // Will be set if image fails to load
     };
   }
 
@@ -184,8 +211,19 @@ export class OIDCClientService {
           // Base client data with standard transformations
           const transformedClient = this.transformClient(client);
 
-          // Add group information if available
+          // Add additional details from client details if available
           const clientDetails = clientDetailsList[client.id];
+          if (clientDetails) {
+            // Make sure to preserve callback_urls from various sources
+            if (
+              !transformedClient.callback_urls ||
+              transformedClient.callback_urls.length === 0
+            ) {
+              // Try to get from different possible field names
+              transformedClient.callback_urls =
+                clientDetails.callbackURLs || [];
+            }
+          }
 
           // Check if this client has group restrictions
           if (clientDetails?.allowedUserGroups?.length > 0) {
@@ -209,7 +247,6 @@ export class OIDCClientService {
               allowedGroupIds.includes(groupId)
             );
 
-            // Set a hasAccess property for filtering
             transformedClient.hasAccess = hasAccess;
 
             if (!hasAccess) {
@@ -236,9 +273,6 @@ export class OIDCClientService {
           return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
         });
 
-      console.log(
-        `Filtered to ${accessibleClients.length} accessible clients for user`
-      );
       return accessibleClients;
     } catch (error) {
       console.error("Error processing clients with group access:", error);

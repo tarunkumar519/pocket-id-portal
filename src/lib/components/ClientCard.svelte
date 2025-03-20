@@ -36,7 +36,6 @@
   }
 
   // Calculate animation delay based on position in grid
-  // This creates a diagonal wave effect from top-left to bottom-right
   function calculateAnimationDelay(index: number, columns: number): string {
     const row = Math.floor(index / columns);
     const col = index % columns;
@@ -53,31 +52,24 @@
   // Extract base URL from callback URL
   // For example: https://example.test.com/callback -> https://example.test.com
   function getBaseUrl(callbackUrls: string[] | undefined): string {
-    // If no callback URLs are available, use the default auth endpoint
+    // If no callback URLs are available, return a placeholder
     if (!callbackUrls || callbackUrls.length === 0) {
-      return getDefaultRedirectUrl(client.client_id);
+      console.warn(`No callback URLs found for client ${client.name}`);
+      return "#"; // Return a hash to prevent navigation
     }
 
     try {
       // Take the first callback URL
       const callbackUrl = callbackUrls[0];
+
       // Parse the URL to extract just the origin (protocol + domain + port)
       const url = new URL(callbackUrl);
       return url.origin;
     } catch (error) {
-      console.error("Error parsing callback URL:", error);
-      // Fallback to default redirect URL if parsing fails
-      return getDefaultRedirectUrl(client.client_id);
+      console.error(`Error parsing callback URL for ${client.name}:`, error);
+      // Return a hash to prevent navigation
+      return "#";
     }
-  }
-
-  // Default redirect URL using OIDC config (as fallback)
-  function getDefaultRedirectUrl(clientId: string): string {
-    const baseUrl = env.PUBLIC_OIDC_AUTH_ENDPOINT;
-    const redirectUri = browser
-      ? encodeURIComponent(window.location.origin + "/callback")
-      : encodeURIComponent(`${env.PUBLIC_OIDC_ISSUER}/callback`);
-    return `${baseUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${encodeURIComponent(env.PUBLIC_OIDC_SCOPES)}`;
   }
 
   // Generate a consistent background gradient based on client name
@@ -99,8 +91,8 @@
     return `hsla(${hue}, 70%, 97%, 0.8)`;
   }
 
-  // Get the launch URL from callback URLs or fall back to default redirect
-  const launchUrl = getBaseUrl(client.callback_urls);
+  // Get the launch URL directly from the client's callback URLs
+  let launchUrl = $state(getBaseUrl(client.callback_urls));
 </script>
 
 <Card.Root
@@ -191,6 +183,7 @@
         href={launchUrl}
         target="_blank"
         rel="noopener noreferrer"
+        disabled={launchUrl === "#"}
       >
         <ArrowRight class="w-4 h-4 mr-2" />
         Launch App
