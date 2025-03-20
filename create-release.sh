@@ -1,5 +1,5 @@
 # Check if the script is being run from the root of the project
-if [ ! -f .version ] || [ ! -f frontend/package.json ] || [ ! -f CHANGELOG.md ]; then
+if [ ! -f .version ] || [ ! -f package.json ] || [ ! -f CHANGELOG.md ]; then
     echo "Error: This script must be run from the root of the project."
     exit 1
 fi
