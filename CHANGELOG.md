@@ -1,3 +1,22 @@
+## [1.3.0](https://github.com/kmendell/pocket-id-portal/compare/v1.2.0...v1.3.0) (2025-03-23)
+
+### Features
+
+* add profile page ([03d360f](https://github.com/kmendell/pocket-id-portal/commit/03d360ff1ec2010cde51015d29be53174c63a35e))
+* **callback:** redesign callback page to match modern design ([ffb9e65](https://github.com/kmendell/pocket-id-portal/commit/ffb9e65f8fece011991919b51934022adf533561))
+* list passkeys on settings page ([f97f94e](https://github.com/kmendell/pocket-id-portal/commit/f97f94e947282bc03fc690cf00d71297c0a8e1ad))
+* **settings:** redesign settings page ([d982c54](https://github.com/kmendell/pocket-id-portal/commit/d982c543fe73fae6d3b094788617a53290d26149))
+
+### Bug Fixes
+
+* **animations:** align animations on dashboard ([8e40e1c](https://github.com/kmendell/pocket-id-portal/commit/8e40e1c219f5defb995119aa8e464c218838f248))
+* **client-card:** realign badges to make overall ux better ([523a446](https://github.com/kmendell/pocket-id-portal/commit/523a446f27a5b3938f7826ef0b33a0e82a527427))
+* incorrect font for userId field ([46241e7](https://github.com/kmendell/pocket-id-portal/commit/46241e76aedf72769f8133e97345a3db53a3ac85))
+* passkey card formatting ([74d3b98](https://github.com/kmendell/pocket-id-portal/commit/74d3b9861b12e37fcc5ea5619917e5b5fc04d2a6))
+* **passkey:** redesign passkey items ([ce9d871](https://github.com/kmendell/pocket-id-portal/commit/ce9d871c8bce280e02a57cebeba84b56cd6dc717))
+* remove unused filter button ([c731cc2](https://github.com/kmendell/pocket-id-portal/commit/c731cc2ee9352762c7994a5a5e79e71c458f641f))
+* userId textbox incorrect size ([b8120f2](https://github.com/kmendell/pocket-id-portal/commit/b8120f2043a666d4cc3979f037e666b0b377d5dd))
+* verified email badge borders ([1172934](https://github.com/kmendell/pocket-id-portal/commit/1172934e6c1985e8434529d93cc480408fc6b8ec))
 ## [1.2.0](https://github.com/kmendell/pocket-id-portal/compare/v1.1.2...v1.2.0) (2025-03-23)
 
 ### Features
