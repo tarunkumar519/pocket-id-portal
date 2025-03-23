@@ -1,3 +1,11 @@
+## [1.3.3](https://github.com/pocket-id/pocket-id-portal/compare/v1.3.2...v1.3.3) (2025-03-23)
+
+### Bug Fixes
+
+* Clear text transmission of sensitive cookie ([#8](https://github.com/pocket-id/pocket-id-portal/issues/8)) ([c6248b4](https://github.com/pocket-id/pocket-id-portal/commit/c6248b482415d954ae556a33deada99e97688c04))
+* **hero-header:** use svelte 5 syntax ([9c31691](https://github.com/pocket-id/pocket-id-portal/commit/9c316918328403f11f7747dc734760556b1f16b6))
+* remove unused user info variables from type ([2ef81f1](https://github.com/pocket-id/pocket-id-portal/commit/2ef81f1541961cf6958c9c0af12034dac5528629))
+* unused hardcoded credentials ([4cffd9d](https://github.com/pocket-id/pocket-id-portal/commit/4cffd9d09e21e1a3e4867d467ff2c768189eea57))
 ## [1.3.2](https://github.com/kmendell/pocket-id-portal/compare/v1.3.1...v1.3.2) (2025-03-23)
 
 ### Bug Fixes
