@@ -4,7 +4,7 @@ import { browser } from "$app/environment";
 // Define the user config type
 export type UserConfig = {
   theme: "light" | "dark" | "system";
-  landingPage: "dashboard" | "settings";
+  landingPage: "dashboard" | "settings" | "profile";
 };
 
 // Default configuration
@@ -75,7 +75,7 @@ function applyTheme(theme: UserConfig["theme"]) {
   // Apply new theme
   if (theme === "system") {
     const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
+      "(prefers-color-scheme: dark)"
     ).matches;
     document.documentElement.classList.add(prefersDark ? "dark" : "light");
   } else {

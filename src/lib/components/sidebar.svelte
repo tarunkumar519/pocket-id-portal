@@ -10,6 +10,7 @@
     Settings,
     ChevronLeft,
     ChevronRight,
+    User,
   } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import { Separator } from "$lib/components/ui/separator";
@@ -29,6 +30,7 @@
     page.url.pathname === "/" || page.url.pathname === "/dashboard"
   );
   const isOnSettings = $derived(page.url.pathname.startsWith("/settings"));
+  const isOnProfile = $derived(page.url.pathname.startsWith("/profile"));
 
   // Collapsible state
   let isCollapsed = $state(false);
@@ -119,6 +121,25 @@
         <span>Dashboard</span>
       {/if}
     </a>
+
+    <!-- Add new Profile link here -->
+    <a
+      href="/profile"
+      class={cn(
+        "flex items-center transition-colors rounded-lg",
+        isCollapsed ? "justify-center p-2" : "gap-3 px-4 py-2.5 text-sm",
+        isOnProfile
+          ? "bg-primary/10 text-primary font-medium"
+          : "text-foreground hover:bg-muted/50"
+      )}
+      aria-label="Profile"
+    >
+      <User class="h-4 w-4" />
+      {#if !isCollapsed}
+        <span>Profile</span>
+      {/if}
+    </a>
+
     <a
       href="/settings"
       class={cn(
