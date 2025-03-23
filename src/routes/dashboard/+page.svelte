@@ -138,7 +138,9 @@
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Groups Panel -->
       <div class="w-full md:w-1/4">
-        <div class="rounded-xl border bg-card shadow-sm p-5 sticky top-6">
+        <div
+          class="rounded-xl border bg-card shadow-sm p-5 sticky top-6 h-[calc(100vh-16rem)] flex flex-col"
+        >
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
               <div class="bg-primary/10 p-1.5 rounded-md">
@@ -155,7 +157,7 @@
 
           {#if userGroups.length > 0}
             <div
-              class="space-y-2 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar"
+              class="flex-grow space-y-2 overflow-y-auto pr-1 custom-scrollbar"
             >
               {#each userGroups as group (group.id)}
                 <div
@@ -173,7 +175,7 @@
             </div>
           {:else}
             <div
-              class="text-muted-foreground text-sm flex items-center gap-2 p-3 border border-dashed rounded-lg bg-muted/5"
+              class="flex-grow text-muted-foreground text-sm flex items-center justify-center gap-2 p-3 border border-dashed rounded-lg bg-muted/5"
             >
               <Users class="h-4 w-4" />
               <span>No groups assigned</span>
