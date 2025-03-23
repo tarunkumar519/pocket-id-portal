@@ -139,7 +139,8 @@
       <!-- Groups Panel -->
       <div class="w-full md:w-1/4">
         <div
-          class="rounded-xl border bg-card shadow-sm p-5 sticky top-6 h-[calc(100vh-16rem)] flex flex-col"
+          class="rounded-xl border bg-card shadow-sm p-5 sticky top-6 h-[calc(100vh-16rem)] flex flex-col animate-fade-in"
+          style="animation-delay: 100ms;"
         >
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
@@ -159,9 +160,10 @@
             <div
               class="flex-grow space-y-2 overflow-y-auto pr-1 custom-scrollbar"
             >
-              {#each userGroups as group (group.id)}
+              {#each userGroups as group, i (group.id)}
                 <div
-                  class="group flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                  class="group flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors animate-fade-in opacity-0"
+                  style="animation-delay: {150 + i * 75}ms"
                 >
                   <Badge
                     variant="outline"
@@ -316,6 +318,18 @@
 <style>
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .custom-scrollbar {
