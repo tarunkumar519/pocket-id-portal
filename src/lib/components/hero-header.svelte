@@ -5,9 +5,11 @@
     title: string;
     description?: string;
     icon: typeof IconType;
+    actions: () => any;
   }
 
   let {
+    actions,
     title = $bindable("Page Title"),
     description = $bindable(""),
     icon = $bindable(),
@@ -37,8 +39,8 @@
         </p>
       {/if}
     </div>
-    <slot name="actions">
+    {#if actions}{@render actions()}{:else}
       <!-- Optional slot for buttons or other actions -->
-    </slot>
+    {/if}
   </div>
 </div>

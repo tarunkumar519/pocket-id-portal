@@ -81,19 +81,21 @@
     description="Access all your authorized applications from this portal."
     icon={LayoutDashboard}
   >
-    <div slot="actions" class="relative w-full md:w-auto">
-      <div
-        class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
-      >
-        <Search class="h-4 w-4 text-muted-foreground mr-2" />
-        <input
-          type="text"
-          placeholder="Search applications..."
-          class="flex-1 bg-transparent outline-none text-sm"
-          bind:value={searchTerm}
-        />
+    {#snippet actions()}
+        <div  class="relative w-full md:w-auto">
+        <div
+          class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
+        >
+          <Search class="h-4 w-4 text-muted-foreground mr-2" />
+          <input
+            type="text"
+            placeholder="Search applications..."
+            class="flex-1 bg-transparent outline-none text-sm"
+            bind:value={searchTerm}
+          />
+        </div>
       </div>
-    </div>
+      {/snippet}
   </HeroHeader>
 
   {#if error}
