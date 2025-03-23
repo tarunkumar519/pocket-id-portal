@@ -1,3 +1,8 @@
+## [1.3.1](https://github.com/kmendell/pocket-id-portal/compare/v1.3.0...v1.3.1) (2025-03-23)
+
+### Bug Fixes
+
+* changing wording of access label ([86e6515](https://github.com/kmendell/pocket-id-portal/commit/86e651511265e0bc15eaa4ebb5c68913580dc196))
 ## [1.3.0](https://github.com/kmendell/pocket-id-portal/compare/v1.2.0...v1.3.0) (2025-03-23)
 
 ### Features
