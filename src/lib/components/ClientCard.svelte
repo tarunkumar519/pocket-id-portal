@@ -171,7 +171,7 @@
       <!-- Access Status -->
       <div class="flex items-center gap-2">
         <span class="text-xs font-medium text-muted-foreground"
-          >Access Status:</span
+          >Access Value:</span
         >
         {#if client.restrictedAccess}
           <Badge
