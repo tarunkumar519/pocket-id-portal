@@ -1,3 +1,8 @@
+## [1.3.2](https://github.com/kmendell/pocket-id-portal/compare/v1.3.1...v1.3.2) (2025-03-23)
+
+### Bug Fixes
+
+* use default pocketid background and favicon ([415422f](https://github.com/kmendell/pocket-id-portal/commit/415422fcb47f5d18665f3bca7b28a9a9feb1779c))
 ## [1.3.1](https://github.com/kmendell/pocket-id-portal/compare/v1.3.0...v1.3.1) (2025-03-23)
 
 ### Bug Fixes
