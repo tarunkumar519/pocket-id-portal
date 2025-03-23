@@ -190,7 +190,8 @@
       <div class="w-full md:w-3/4 flex flex-col h-[calc(100vh-16rem)]">
         <!-- Adjust -16rem as needed based on header size -->
         <div
-          class="rounded-xl border bg-card shadow-sm flex-grow flex flex-col overflow-hidden h-full"
+          class="rounded-xl border bg-card shadow-sm flex-grow flex flex-col overflow-hidden h-full animate-fade-in"
+          style="animation-delay: 150ms;"
         >
           <div class="p-5 border-b">
             <div class="flex items-center justify-between">
@@ -257,7 +258,10 @@
                             .includes(searchTerm.toLowerCase()) || client.description
                             ?.toLowerCase()
                             .includes(searchTerm.toLowerCase())) as client, i}
-                        <div class="min-h-[200px]">
+                        <div
+                          class="min-h-[200px] animate-fade-in opacity-0"
+                          style="animation-delay: {200 + i * 75}ms"
+                        >
                           <ClientCard
                             {client}
                             index={i}
