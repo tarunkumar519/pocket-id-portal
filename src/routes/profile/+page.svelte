@@ -302,36 +302,53 @@
           </div>
         {:else}
           <div class="space-y-4">
-            <p class="text-sm mb-2">
+            <p class="text-sm">
               You have {passkeys.length} registered passkey{passkeys.length !==
               1
                 ? "s"
                 : ""}.
             </p>
-            <div class="space-y-3 mt-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
               {#each passkeys as passkey, i (passkey.id)}
                 <div
-                  class="flex items-center justify-between p-3 border rounded-lg animate-fade-in opacity-0"
+                  class="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 border
+                         hover:shadow-md transition-all animate-fade-in opacity-0 relative overflow-hidden group"
                   style="animation-delay: {200 + i * 75}ms"
                 >
-                  <div class="flex items-center gap-3">
-                    <div class="bg-primary/10 p-2 rounded-full">
-                      <Key class="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p class="text-sm font-medium">
-                        {passkey.name || "Passkey " + (i + 1)}
-                      </p>
+                  <div
+                    class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0
+                              group-hover:opacity-100 transition-opacity duration-300"
+                  ></div>
+
+                  <div
+                    class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center
+                              border-4 border-background shadow-sm relative z-10"
+                  >
+                    <Key class="h-5 w-5 text-primary" />
+                  </div>
+
+                  <div class="flex-1 relative z-10">
+                    <p class="font-medium text-sm">
+                      {passkey.name || `Passkey ${i + 1}`}
+                    </p>
+                    <div class="flex items-center gap-2 mt-1">
                       <p class="text-xs text-muted-foreground">
-                        Added {new Date(
-                          passkey.created_at
-                        ).toLocaleDateString()}
+                        {new Date(passkey.created_at).toLocaleDateString()}
                       </p>
+                      {#if passkey.device}
+                        <!-- We need to somehow implement this in pocket id first -->
+                        <!-- <div
+                          class="h-1 w-1 rounded-full bg-muted-foreground/30"
+                        ></div>
+                        <Badge
+                          variant="outline"
+                          class="text-[10px] py-0 px-1.5 h-4"
+                        >
+                          {passkey.device}
+                        </Badge> -->
+                      {/if}
                     </div>
                   </div>
-                  <!-- <Badge variant="outline" class="text-xs">
-                    {passkey.device || "Device"}
-                  </Badge> -->
                 </div>
               {/each}
             </div>
