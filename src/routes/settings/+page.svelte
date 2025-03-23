@@ -26,6 +26,7 @@
     // Get data from the server load function
     data: {
       userGroups: UserGroup[];
+      passkeys: any[]; // Add passkeys to the data interface
       status: "success" | "error";
       error: string | null;
     };
@@ -36,8 +37,9 @@
   // User profile data
   let user = $derived($auth.user);
 
-  // Get user groups from server-loaded data
+  // Get user groups and passkeys from server-loaded data
   let userGroups: UserGroup[] = $derived(data.userGroups || []);
+  let passkeys = $derived(data.passkeys || []);
   let groupsError = $derived(data.status === "error" ? data.error : null);
   let loading = $derived(false);
 
@@ -223,12 +225,94 @@
       </Card.Header>
 
       <Card.Content class="px-6 pt-6">
-        <div class="bg-muted/10 p-4 rounded-lg border">
-          <p class="text-sm">
-            Passkeys provide a secure, passwordless way to authenticate. You can
-            register and manage your passkeys directly in Pocket ID.
-          </p>
-        </div>
+        {#if data.status === "error"}
+          <div
+            class="bg-destructive/5 p-4 rounded-lg border border-destructive/20"
+          >
+            <p class="text-sm text-destructive">Error: {data.error}</p>
+            <p class="text-xs text-muted-foreground mt-2">
+              Unable to load your passkeys. You can still manage them directly
+              in Pocket ID.
+            </p>
+          </div>
+        {:else if loading}
+          <div
+            class="flex items-center justify-center h-24 bg-muted/5 rounded-lg border border-dashed"
+          >
+            <div class="flex items-center gap-3">
+              <div class="animate-spin">
+                <svg
+                  class="h-5 w-5 text-primary"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </div>
+              <p class="text-sm text-muted-foreground">Loading passkeys...</p>
+            </div>
+          </div>
+        {:else if passkeys.length === 0}
+          <div class="bg-muted/10 p-4 rounded-lg border">
+            <p class="text-sm">
+              You don't have any passkeys registered. Passkeys provide a secure,
+              passwordless way to authenticate. You can register your first
+              passkey in Pocket ID.
+            </p>
+          </div>
+        {:else}
+          <div class="space-y-4">
+            <div class="bg-muted/10 p-4 rounded-lg border">
+              <p class="text-sm mb-2">
+                You have {passkeys.length} registered passkey{passkeys.length !==
+                1
+                  ? "s"
+                  : ""}. These allow you to sign in without a password.
+              </p>
+            </div>
+
+            <div class="space-y-3 mt-4">
+              {#each passkeys as passkey, i (passkey.id)}
+                <div
+                  class="flex items-center justify-between p-3 border rounded-lg animate-fade-in opacity-0"
+                  style="animation-delay: {200 + i * 75}ms"
+                >
+                  <div class="flex items-center gap-3">
+                    <div class="bg-primary/10 p-2 rounded-full">
+                      <Key class="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium">
+                        {passkey.name || "Passkey " + (i + 1)}
+                      </p>
+                      <p class="text-xs text-muted-foreground">
+                        Added {new Date(
+                          passkey.created_at
+                        ).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" class="text-xs">
+                    {passkey.device || "Device"}
+                  </Badge>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {/if}
       </Card.Content>
 
       <Card.Footer class="px-6 py-4 bg-muted/5 border-t">

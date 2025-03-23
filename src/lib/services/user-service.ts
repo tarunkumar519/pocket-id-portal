@@ -9,6 +9,7 @@ import { CacheService } from "./cache-service";
 export class UserService {
   // Cache TTL for user groups (10 minutes)
   private static USER_GROUPS_TTL = 10 * 60 * 1000;
+  private static PASSKEYS_TTL = 5 * 60 * 1000; // 5 minutes cache for passkeys
 
   /**
    * Get user ID from cookies
@@ -143,6 +144,87 @@ export class UserService {
       console.error(`Error fetching groups for user ${userId}:`, error);
 
       // Don't cache errors this time - let's try again next time
+      return [];
+    }
+  }
+
+  /**
+   * Fetch passkeys for a specific user
+   */
+  static async fetchUserPasskeys(
+    userId: string,
+    fetch: typeof globalThis.fetch,
+    headers: Record<string, string>
+  ): Promise<any[]> {
+    // Generate cache key
+    const cacheKey = `user_passkeys_${userId}`;
+
+    // Check cache first
+    const cachedData = CacheService.get<any[]>(cacheKey);
+    if (cachedData) {
+      return cachedData;
+    }
+
+    console.log(`Fetching passkeys for user ${userId} from API`);
+    const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/webauthn/credentials`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers,
+      });
+
+      if (!response.ok) {
+        console.error(`API returned status ${response.status} for passkeys`);
+
+        if (response.status === 429) {
+          // Rate limited - try again with delay
+          console.log("Rate limited, trying once more with delay");
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          return this.fetchUserPasskeys(userId, fetch, headers);
+        }
+
+        throw new Error(`Failed to fetch passkeys: ${response.status}`);
+      }
+
+      // Parse the JSON response
+      const data = await response.json();
+
+      // Format the passkeys consistently
+      let passkeys = [];
+
+      if (Array.isArray(data)) {
+        passkeys = data;
+      } else if (data.credentials && Array.isArray(data.credentials)) {
+        passkeys = data.credentials;
+      } else if (data.passkeys && Array.isArray(data.passkeys)) {
+        passkeys = data.passkeys;
+      } else {
+        console.warn(
+          "Unexpected data structure for passkeys:",
+          Object.keys(data)
+        );
+        passkeys = [];
+      }
+
+      // Normalize the passkey objects
+      const formattedPasskeys = passkeys.map((passkey: any) => ({
+        id: passkey.id || passkey.credential_id || "unknown",
+        name: passkey.name || "Unnamed Passkey",
+        created_at:
+          passkey.created_at || passkey.createdAt || new Date().toISOString(),
+        device: passkey.device || passkey.deviceType || "Unknown Device",
+      }));
+
+      // Cache the results
+      if (formattedPasskeys.length > 0) {
+        CacheService.set(cacheKey, formattedPasskeys, this.PASSKEYS_TTL);
+      }
+
+      return formattedPasskeys;
+    } catch (error) {
+      console.error(`Error fetching passkeys for user ${userId}:`, error);
+      // Don't cache errors
       return [];
     }
   }

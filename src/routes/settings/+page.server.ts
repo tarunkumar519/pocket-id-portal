@@ -11,19 +11,21 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     // Get user ID from cookies
     const userId = UserService.getUserIdFromCookies(cookies);
 
-    // Default response with empty user groups
+    // Default response
     let userGroups = [];
+    let passkeys = [];
     let error = null;
 
-    // If we have a user ID, fetch their groups
+    // If we have a user ID, fetch their groups and passkeys
     if (userId) {
       try {
         // Fetch fresh data every time for settings page
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
+        passkeys = await UserService.fetchUserPasskeys(userId, fetch, headers);
       } catch (err) {
-        console.warn("Error fetching user groups for settings page:", err);
+        console.warn("Error fetching user data for settings page:", err);
         error =
-          err instanceof Error ? err.message : "Failed to fetch user groups";
+          err instanceof Error ? err.message : "Failed to fetch user data";
       }
     } else {
       error = "User ID not found in cookies";
@@ -31,6 +33,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
     return {
       userGroups,
+      passkeys,
       status: error ? "error" : "success",
       error,
     };
@@ -38,6 +41,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     console.error("Error in settings page server load function:", error);
     return {
       userGroups: [],
+      passkeys: [],
       status: "error",
       error: error instanceof Error ? error.message : "Unknown error",
     };
