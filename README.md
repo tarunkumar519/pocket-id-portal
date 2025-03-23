@@ -1,19 +1,17 @@
 # Pocket ID Portal
 
-A modern, secure user portal for managing Pocket ID authentication applications built with SvelteKit, Tailwind CSS, and OIDC integration.
-
-## Overview
-
 > [!WARNING]
 > This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID. There may be certain things (outside of the pocket-id api info) that dont work currently.
 
+## Overview
+
 The Pocket ID Portal provides a user-friendly interface for accessing and managing applications that use Pocket ID for authentication. It offers a seamless single sign-on experience with secure OIDC authentication flow.
 
-## Features
+## Current Features
 
-- **OIDC Authentication**: Secure login via OpenID Connect protocol
+- **OIDC Authentication**: Secure login via your Pocket ID instance.
 - **Application Dashboard**: View and access all authorized applications
-- **User Profile**: View and manage your profile information
+- **User Profile**: View your profile information
 - **Group Management**: See which groups you belong to
 - **Preferences**: Customize the portal experience with theme and landing page settings
 - **Responsive Design**: Works well on desktop and mobile devices
@@ -24,14 +22,13 @@ The Pocket ID Portal provides a user-friendly interface for accessing and managi
 - **Tailwind CSS**: Utility-first CSS framework for styling
 - **Shadcn-Svelte**: UI component library with dark/light mode support
 - **TypeScript**: Static typing for better developer experience
-- **OIDC Client**: Integration with OpenID Connect authentication
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18 or higher
-- npm or pnpm
+- Node.js 22 or higher
+- npm
 
 ### Installation
 
