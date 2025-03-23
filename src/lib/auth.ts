@@ -31,7 +31,7 @@ function getOidcConfig(): OIDCConfig {
     userinfo_endpoint: endpoints.userinfoEndpoint,
     jwks_uri: endpoints.jwksUri,
     scopes_supported: (env.PUBLIC_OIDC_SCOPES || "openid profile email").split(
-      " ",
+      " "
     ),
     response_types_supported: [
       "code",
@@ -63,7 +63,7 @@ export function buildAuthorizationUrl(
   scope: string = env.PUBLIC_OIDC_SCOPES || "openid profile email",
   response_type: string = "code",
   state: string = generateState(),
-  nonce: string = generateNonce(),
+  nonce: string = generateNonce()
 ): string {
   const params = new URLSearchParams({
     client_id,
@@ -82,74 +82,48 @@ export async function exchangeCodeForTokens(
   code: string,
   client_id: string,
   client_secret: string,
-  redirect_uri: string,
+  redirect_uri: string
 ): Promise<TokenResponse> {
-  try {
-    const params = new URLSearchParams({
-      grant_type: "authorization_code",
-      code,
-      redirect_uri,
-      client_id,
-      client_secret,
-    });
+  const params = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri,
+    client_id,
+    client_secret,
+  });
 
-    const response = await fetch(oidcConfig.token_endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: params.toString(),
-    });
+  const response = await fetch(oidcConfig.token_endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params.toString(),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.error_description || "Failed to exchange code for tokens",
-      );
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error exchanging code for tokens:", error);
-    // Fallback to mock response in case of error
-    return {
-      access_token: "mock_access_token",
-      token_type: "Bearer",
-      expires_in: 3600,
-      refresh_token: "mock_refresh_token",
-      id_token: "mock_id_token",
-      scope: "openid profile email",
-    };
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.error_description ||
+        `Failed to exchange code for tokens: ${response.status}`
+    );
   }
+
+  return await response.json();
 }
 
 // Get user info using access token
 export async function getUserInfo(access_token: string): Promise<UserInfo> {
-  try {
-    const response = await fetch(oidcConfig.userinfo_endpoint, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+  const response = await fetch(oidcConfig.userinfo_endpoint, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch user info");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching user info:", error);
-    // Fallback to mock response in case of error
-    return {
-      sub: "123456789",
-      name: "John Doe",
-      given_name: "John",
-      family_name: "Doe",
-      email: "john.doe@example.com",
-      email_verified: true,
-      picture: "https://example.com/profile.jpg",
-    };
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user info: ${response.status}`);
   }
+
+  return await response.json();
 }
 
 // Validate ID token
@@ -163,18 +137,32 @@ export function validateIdToken(id_token: string): boolean {
 export async function refreshAccessToken(
   refresh_token: string,
   client_id: string,
-  client_secret: string,
+  client_secret: string
 ): Promise<TokenResponse> {
-  // In a real app, this would make an API call to the token endpoint
-  // For now, we'll return a mock response
-  return {
-    access_token: "new_mock_access_token",
-    token_type: "Bearer",
-    expires_in: 3600,
-    refresh_token: "new_mock_refresh_token",
-    id_token: "new_mock_id_token",
-    scope: "openid profile email",
-  };
+  const params = new URLSearchParams({
+    grant_type: "refresh_token",
+    refresh_token,
+    client_id,
+    client_secret,
+  });
+
+  const response = await fetch(oidcConfig.token_endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: params.toString(),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.error_description ||
+        `Failed to refresh token: ${response.status}`
+    );
+  }
+
+  return await response.json();
 }
 
 // Get stored auth state
@@ -205,7 +193,7 @@ export function getAuthState(): {
 // Store auth state in localStorage and cookies
 export function storeAuthState(
   tokens: TokenResponse,
-  userInfo: UserInfo,
+  userInfo: UserInfo
 ): void {
   try {
     // Store in localStorage
@@ -221,12 +209,12 @@ export function storeAuthState(
 
     // Store the tokens in a cookie for server-side access
     document.cookie = `auth_token=${JSON.stringify(
-      tokens,
+      tokens
     )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax; secure`;
 
     // Store user info in a cookie for server-side access
     document.cookie = `auth_user=${JSON.stringify(
-      userInfo,
+      userInfo
     )}; path=/; max-age=${tokenMaxAge}; SameSite=Lax; secure`;
 
     // User ID cookie gets a much longer expiration (30 days)
@@ -239,7 +227,7 @@ export function storeAuthState(
       document.cookie = `user_id=${userInfo.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax; secure`;
       console.log(
         `Set user_id cookie with domain ${domain} and 30-day expiration:`,
-        userInfo.sub,
+        userInfo.sub
       );
     }
   } catch (error) {
@@ -285,7 +273,7 @@ export async function handleCallback(
   url: URL,
   client_id: string,
   client_secret: string,
-  redirect_uri: string,
+  redirect_uri: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const params = new URLSearchParams(url.search);
@@ -312,7 +300,7 @@ export async function handleCallback(
       code,
       client_id,
       client_secret,
-      redirect_uri,
+      redirect_uri
     );
 
     // Validate ID token
