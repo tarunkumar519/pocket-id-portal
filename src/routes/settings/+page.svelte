@@ -21,7 +21,7 @@
   const pageOptions = [
     { value: "dashboard", label: "Dashboard", icon: Layout },
     { value: "settings", label: "Settings", icon: Settings2 },
-    { value: "profile", label: "Profile", icon: Layout }, // Add profile as an option
+    { value: "profile", label: "Profile", icon: Layout },
   ] as const;
 
   // Update theme preference when selected
