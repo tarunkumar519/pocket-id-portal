@@ -12,9 +12,11 @@
   let isLoading = $state(false);
   let errorMessage = $state("");
   let backgroundImageUrl: string | null = $state(null);
+  let fallbackImageExists = $state(true); // Assume fallback exists until proven otherwise
 
   // Generate the logo URL using the utility function
   const logoUrl = getLogoUrl(env.PUBLIC_OIDC_ISSUER);
+  const staticBackgroundPath = "/background.jpg"; // Path to static background image
 
   const redirectUri = env.PUBLIC_APP_URL
     ? `${env.PUBLIC_APP_URL}/callback`
@@ -29,6 +31,19 @@
         await ApplicationConfigurationService.fetchBackgroundImage();
     } catch (error) {
       console.warn("Failed to load background image:", error);
+      backgroundImageUrl = null;
+    }
+
+    // Check if the static fallback image exists
+    if (!backgroundImageUrl && typeof window !== "undefined") {
+      const img = new Image();
+      img.onload = () => {
+        fallbackImageExists = true;
+      };
+      img.onerror = () => {
+        fallbackImageExists = false;
+      };
+      img.src = staticBackgroundPath;
     }
   });
 
@@ -114,12 +129,13 @@
 
   <!-- Right Section -->
   <div
-    class=" h-screen w-[calc(100vw-650px)] rounded-l-[60px] object-cover"
+    class="h-screen w-[calc(100vw-650px)] rounded-l-[60px] object-cover"
     style="background-image: url({backgroundImageUrl ||
-      ''}); background-size: cover; background-position: center;"
+      (fallbackImageExists ? staticBackgroundPath : '')}); 
+      background-size: cover; background-position: center;"
   >
-    <!-- Background graphic - shown only when background image is not available -->
-    {#if !backgroundImageUrl}
+    <!-- Background graphic - shown only when no images are available -->
+    {#if !backgroundImageUrl && !fallbackImageExists}
       <div
         class="absolute inset-0 bg-gradient-to-br from-purple-700 via-indigo-800 to-black"
       ></div>
