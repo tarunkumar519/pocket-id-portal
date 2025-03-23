@@ -14,7 +14,6 @@
   import { Button } from "$lib/components/ui/button";
   import { Separator } from "$lib/components/ui/separator";
   import { browser } from "$app/environment";
-  import { writable } from "svelte/store";
 
   // Get the base URL from environment variables
   const baseUrl = $state(env.PUBLIC_OIDC_ISSUER);
