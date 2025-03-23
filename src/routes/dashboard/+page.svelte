@@ -89,9 +89,9 @@
           <h1 class="text-3xl font-bold tracking-tight">My Applications</h1>
         </div>
         <p class="text-muted-foreground max-w-lg">
-          Welcome to your personal dashboard, {$auth.user?.name ||
-            $auth.user?.email ||
-            "User"}. Access all your authorized applications from this portal.
+          Welcome to your Pocket ID dashboard, <span class="font-black"
+            >{$auth.user?.name || $auth.user?.email || "User"}!</span
+          > Access all your authorized applications from this portal.
         </p>
       </div>
 
