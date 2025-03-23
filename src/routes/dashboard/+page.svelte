@@ -203,11 +203,6 @@
                 <Badge variant="outline" class="bg-muted/30">
                   {accessibleClients.length} apps
                 </Badge>
-                <button
-                  class="p-1.5 rounded-md hover:bg-muted/50 transition-colors"
-                >
-                  <Filter class="h-4 w-4 text-muted-foreground" />
-                </button>
               </div>
             </div>
           </div>
