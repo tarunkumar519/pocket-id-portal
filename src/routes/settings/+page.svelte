@@ -275,15 +275,12 @@
           </div>
         {:else}
           <div class="space-y-4">
-            <div class="bg-muted/10 p-4 rounded-lg border">
-              <p class="text-sm mb-2">
-                You have {passkeys.length} registered passkey{passkeys.length !==
-                1
-                  ? "s"
-                  : ""}. These allow you to sign in without a password.
-              </p>
-            </div>
-
+            <p class="text-sm mb-2">
+              You have {passkeys.length} registered passkey{passkeys.length !==
+              1
+                ? "s"
+                : ""}.
+            </p>
             <div class="space-y-3 mt-4">
               {#each passkeys as passkey, i (passkey.id)}
                 <div
@@ -305,9 +302,9 @@
                       </p>
                     </div>
                   </div>
-                  <Badge variant="outline" class="text-xs">
+                  <!-- <Badge variant="outline" class="text-xs">
                     {passkey.device || "Device"}
-                  </Badge>
+                  </Badge> -->
                 </div>
               {/each}
             </div>

@@ -107,3 +107,33 @@
     @apply cursor-pointer;
   }
 }
+
+.rainbow-border {
+  position: relative;
+  padding: 4px;
+  background: linear-gradient(
+    90deg,
+    #ff0000,
+    #ffa500,
+    #ffff00,
+    #00ff00,
+    #00ffff,
+    #0000ff,
+    #ff00ff,
+    #ff0000
+  );
+  background-size: 200% 200%;
+  animation: rainbow 6s linear infinite;
+}
+
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
