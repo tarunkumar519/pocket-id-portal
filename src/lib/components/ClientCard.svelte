@@ -105,80 +105,96 @@
     style="background: {generateGradient(client.name)};"
   ></div>
 
-  <div class="flex items-start p-5 gap-4 flex-1">
-    <!-- Logo with backdrop -->
-    <div
-      class="rounded-xl flex-shrink-0 flex items-center justify-center w-16 h-16 p-2 border shadow-sm"
-      style="background: {client.hasLogo && !client.logoError
-        ? generateLogoBackdrop(client.name)
-        : 'var(--primary-50, #f0f9ff)'};
-             box-shadow: 0 2px 8px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.5);"
-    >
-      {#if client.hasLogo && !client.logoError}
-        <img
-          src={client.logoUrl}
-          alt="{client.name} logo"
-          class="w-full h-full object-contain"
-          loading="lazy"
-          onerror={handleImageError}
-        />
-      {:else}
-        <div
-          class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 rounded-lg"
-        >
-          <span class="text-2xl">{client.icon || "📱"}</span>
-        </div>
-      {/if}
+  <div class="flex flex-col p-5 gap-4 flex-1">
+    <!-- Logo and App Info -->
+    <div class="flex items-start gap-4">
+      <!-- Logo with backdrop -->
+      <div
+        class="rounded-xl flex-shrink-0 flex items-center justify-center w-16 h-16 p-2 border shadow-sm"
+        style="background: {client.hasLogo && !client.logoError
+          ? generateLogoBackdrop(client.name)
+          : 'var(--primary-50, #f0f9ff)'};
+               box-shadow: 0 2px 8px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.5);"
+      >
+        {#if client.hasLogo && !client.logoError}
+          <img
+            src={client.logoUrl}
+            alt="{client.name} logo"
+            class="w-full h-full object-contain"
+            loading="lazy"
+            onerror={handleImageError}
+          />
+        {:else}
+          <div
+            class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 rounded-lg"
+          >
+            <span class="text-2xl">{client.icon || "📱"}</span>
+          </div>
+        {/if}
+      </div>
+
+      <!-- App Info -->
+      <div class="flex-1 min-w-0">
+        <Card.Title class="text-lg font-medium mb-1 line-clamp-2 break-words">
+          {client.name}
+        </Card.Title>
+        {#if client.description}
+          <p class="text-sm text-muted-foreground line-clamp-2">
+            {client.description}
+          </p>
+        {/if}
+      </div>
     </div>
 
-    <!-- App Info -->
-    <div class="flex-1 min-w-0">
-      <Card.Title class="text-lg font-medium mb-1 line-clamp-1">
-        {client.name}
-      </Card.Title>
-      {#if client.description}
-        <p class="text-sm text-muted-foreground line-clamp-2 mb-2">
-          {client.description}
-        </p>
-      {/if}
-
-      <!-- Access Group Badge with Label -->
+    <!-- Access Controls -->
+    <div class="flex flex-col gap-2 mt-2">
+      <!-- Access Group -->
       {#if client.accessGroups && client.accessGroups.length > 0}
-        <div class="mt-2">
-          <div class="text-xs text-muted-foreground mb-1">Access Group:</div>
-          <div class="inline-flex h-5 flex-wrap">
-            {#each client.accessGroups.slice(0, 1) as group}
-              <Badge
-                variant={client.restrictedAccess ? "destructive" : "secondary"}
-                class="text-xs px-2 h-full flex items-center"
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-medium text-muted-foreground"
+            >Access Group:</span
+          >
+          <Badge
+            variant={client.restrictedAccess ? "destructive" : "secondary"}
+            class="text-xs px-2 py-1 flex items-center"
+          >
+            {client.accessGroups[0]}
+            {#if client.accessGroups.length > 1}
+              <span class="ml-1 opacity-75"
+                >+{client.accessGroups.length - 1}</span
               >
-                {group}
-                {#if client.accessGroups.length > 1}
-                  <span class="ml-1 opacity-75"
-                    >+{client.accessGroups.length - 1}</span
-                  >
-                {/if}
-              </Badge>
-            {/each}
-          </div>
+            {/if}
+          </Badge>
         </div>
       {/if}
 
-      <!-- Restricted Access Indicator -->
-      {#if client.restrictedAccess}
-        <div class="flex items-center gap-1 mt-2 text-xs text-destructive">
-          <Lock class="w-4 h-4" />
-          <span>Restricted access</span>
-        </div>
-      {:else}
-        <div class="flex items-center gap-1 mt-2 text-xs text-green-500">
-          <LockOpen class="w-4 h-4" />
-          <span>Unrestricted access</span>
-        </div>
-      {/if}
+      <!-- Access Status -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-medium text-muted-foreground"
+          >Access Status:</span
+        >
+        {#if client.restrictedAccess}
+          <Badge
+            variant="destructive"
+            class="text-xs px-2 py-1 flex items-center gap-1"
+          >
+            <Lock class="w-3 h-3" />
+            <span>Restricted</span>
+          </Badge>
+        {:else}
+          <Badge
+            variant="secondary"
+            class="text-xs px-2 py-1 flex items-center gap-1 text-green-500"
+          >
+            <LockOpen class="w-3 h-3" />
+            <span>Unrestricted</span>
+          </Badge>
+        {/if}
+      </div>
     </div>
   </div>
 
+  <!-- Launch Button -->
   <div class="mt-auto">
     <Separator />
     <div class="p-3">
@@ -196,16 +212,3 @@
     </div>
   </div>
 </Card.Root>
-
-<style>
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
