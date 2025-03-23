@@ -3,9 +3,14 @@
   import { goto } from "$app/navigation";
   import { storeAuthState } from "$lib/auth";
   import { auth } from "$lib/stores/auth.store.js";
+  import { env } from "$env/dynamic/public";
+  import { getLogoUrl } from "$lib/utils/oidc-urls.util";
+  import { CheckCircle, AlertCircle, Loader2 } from "@lucide/svelte";
+
+  // Get logo URL using the utility function
+  const logoUrl = getLogoUrl(env.PUBLIC_OIDC_ISSUER);
 
   let { data } = $props();
-
   let isLoading = $state(true);
   let errorMessage = $state("");
 
@@ -58,61 +63,124 @@
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background">
-  <div
-    class="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-sm"
-  >
-    <div class="text-center">
-      <h1 class="text-2xl font-bold text-foreground">Pocket ID</h1>
-      <p class="text-sm text-muted-foreground">OIDC Portal Admin</p>
+  <div class="w-full max-w-md">
+    <!-- Card with subtle shadow and border -->
+    <div
+      class="rounded-xl border bg-card shadow-sm p-8 animate-fade-in"
+      style="animation-delay: 100ms;"
+    >
+      <!-- Logo and app name section -->
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <div class="bg-primary/10 p-2.5 rounded-lg">
+          <img src={logoUrl} alt="Pocket ID Logo" class="h-8 w-auto" />
+        </div>
+        <div class="text-center">
+          <h1 class="text-2xl font-bold">Pocket ID</h1>
+          <p class="text-xs text-muted-foreground">User Portal</p>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        {#if isLoading}
+          <!-- Loading state -->
+          <div
+            class="flex flex-col items-center justify-center py-8 space-y-4 animate-fade-in"
+          >
+            <div class="relative">
+              <!-- Pulsing background -->
+              <div
+                class="absolute inset-0 rounded-full bg-primary/10 animate-pulse"
+              ></div>
+              <!-- Spinner -->
+              <div class="relative p-4">
+                <Loader2 class="h-8 w-8 text-primary animate-spin" />
+              </div>
+            </div>
+            <div class="text-center">
+              <p class="font-medium text-sm">Verifying your identity</p>
+              <p class="text-xs text-muted-foreground mt-1">
+                Please wait while we process your authentication...
+              </p>
+            </div>
+          </div>
+        {:else if errorMessage}
+          <!-- Error state -->
+          <div class="space-y-4 animate-fade-in">
+            <div
+              class="flex items-center gap-3 p-4 rounded-lg bg-destructive/5 border border-destructive/20"
+            >
+              <div class="bg-destructive/10 p-2 rounded-full flex-shrink-0">
+                <AlertCircle class="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <p class="font-medium text-sm">Authentication Failed</p>
+                <p class="text-xs text-muted-foreground mt-1">{errorMessage}</p>
+              </div>
+            </div>
+            <button
+              class="w-full mt-4 rounded-lg bg-primary py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              onclick={() => goto("/login")}
+            >
+              Back to Login
+            </button>
+          </div>
+        {:else if data.success}
+          <!-- Success state -->
+          <div
+            class="flex flex-col items-center justify-center py-8 space-y-4 animate-fade-in"
+          >
+            <div class="relative">
+              <!-- Success background glow -->
+              <div
+                class="absolute inset-0 rounded-full bg-green-100 dark:bg-green-900/30"
+              ></div>
+              <div class="relative p-4">
+                <CheckCircle
+                  class="h-8 w-8 text-green-600 dark:text-green-400"
+                />
+              </div>
+            </div>
+            <div class="text-center space-y-1">
+              <p class="font-medium">Authentication Successful!</p>
+              <p class="text-sm text-muted-foreground">
+                Welcome back{data.userInfo?.name
+                  ? `, ${data.userInfo.name}`
+                  : ""}!
+              </p>
+              <p class="text-xs text-muted-foreground mt-2">
+                Redirecting you to your dashboard...
+              </p>
+            </div>
+          </div>
+        {/if}
+      </div>
     </div>
 
-    <div class="space-y-6">
-      {#if isLoading}
-        <div class="flex flex-col items-center justify-center space-y-4">
-          <div
-            class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
-          ></div>
-          <p class="text-sm text-muted-foreground">
-            Processing authentication...
-          </p>
-        </div>
-      {:else if errorMessage}
-        <div class="space-y-4">
-          <div
-            class="rounded-md bg-destructive/15 p-3 text-sm text-destructive"
-          >
-            {errorMessage}
-          </div>
-          <button
-            class="w-full rounded-md bg-primary py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-            onclick={() => goto("/login")}
-          >
-            Back to Login
-          </button>
-        </div>
-      {:else if data.success}
-        <div class="flex flex-col items-center justify-center space-y-4">
-          <div class="rounded-full bg-green-100 p-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-green-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <p class="text-center text-sm text-muted-foreground">
-            Authentication successful! Redirecting...
-          </p>
-        </div>
-      {/if}
+    <!-- Decorative element -->
+    <div class="flex justify-center mt-6">
+      <div class="text-xs text-muted-foreground flex items-center gap-1.5">
+        <div class="h-px w-8 bg-muted"></div>
+        Secure Authentication
+        <div class="h-px w-8 bg-muted"></div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+  }
+</style>
