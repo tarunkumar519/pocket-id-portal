@@ -160,7 +160,7 @@
               <div class="space-y-1.5">
                 <p class="text-sm font-medium">User ID</p>
                 <p
-                  class="text-xs bg-muted/30 py-2 px-3 rounded-md font-mono overflow-hidden text-ellipsis"
+                  class="text-sm bg-muted/30 py-2 px-3 rounded-md font-mono overflow-hidden text-ellipsis"
                 >
                   {user?.sub}
                 </p>
