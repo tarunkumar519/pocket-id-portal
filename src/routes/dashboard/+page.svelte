@@ -5,7 +5,8 @@
   import { Badge } from "$lib/components/ui/badge";
   import type { Client, PageServerData, UserGroup } from "$lib/types";
   import { onMount } from "svelte";
-  import { Users, Search, LayoutDashboard, Filter, Zap } from "@lucide/svelte";
+  import { Users, Search, LayoutDashboard, Zap } from "@lucide/svelte";
+  import HeroHeader from "$lib/components/hero-header.svelte";
 
   interface Props {
     data: PageServerData;
@@ -75,42 +76,25 @@
 <!-- Modern Dashboard Layout -->
 <div class="space-y-8 max-w-[1200px] mx-auto flex flex-col h-full">
   <!-- Hero Header Section with Gradient Background -->
-  <div
-    class="dashboard-header rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-8 border shadow-sm"
+  <HeroHeader
+    title="My Applications"
+    description="Access all your authorized applications from this portal."
+    icon={LayoutDashboard}
   >
-    <div
-      class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
-    >
-      <div class="space-y-2">
-        <div class="flex items-center gap-3">
-          <div class="bg-primary/10 p-2 rounded-full">
-            <LayoutDashboard class="h-6 w-6 text-primary" />
-          </div>
-          <h1 class="text-3xl font-bold tracking-tight">My Applications</h1>
-        </div>
-        <p class="text-muted-foreground max-w-lg">
-          Welcome to your Pocket ID dashboard, <span class="font-black"
-            >{$auth.user?.name || $auth.user?.email || "User"}!</span
-          > Access all your authorized applications from this portal.
-        </p>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="relative w-full md:w-auto">
-        <div
-          class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
-        >
-          <Search class="h-4 w-4 text-muted-foreground mr-2" />
-          <input
-            type="text"
-            placeholder="Search applications..."
-            class="flex-1 bg-transparent outline-none text-sm"
-            bind:value={searchTerm}
-          />
-        </div>
+    <div slot="actions" class="relative w-full md:w-auto">
+      <div
+        class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
+      >
+        <Search class="h-4 w-4 text-muted-foreground mr-2" />
+        <input
+          type="text"
+          placeholder="Search applications..."
+          class="flex-1 bg-transparent outline-none text-sm"
+          bind:value={searchTerm}
+        />
       </div>
     </div>
-  </div>
+  </HeroHeader>
 
   {#if error}
     <div class="rounded-xl border bg-destructive/5 p-6 animate-fade-in">

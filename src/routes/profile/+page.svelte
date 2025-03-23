@@ -6,6 +6,7 @@
   import { Badge } from "$lib/components/ui/badge";
   import { Users, User, Shield, Key } from "@lucide/svelte";
   import type { UserGroup } from "$lib/types";
+  import HeroHeader from "$lib/components/hero-header.svelte";
 
   interface Props {
     // Get data from the server load function
@@ -35,25 +36,12 @@
 
 <div class="space-y-8 max-w-[1200px] mx-auto">
   <!-- Hero Header Section with Gradient Background -->
-  <div
-    class="rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-8 border shadow-sm animate-fade-in"
-  >
-    <div
-      class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
-    >
-      <div class="space-y-2">
-        <div class="flex items-center gap-3">
-          <div class="bg-primary/10 p-2 rounded-full">
-            <User class="h-6 w-6 text-primary" />
-          </div>
-          <h1 class="text-3xl font-bold tracking-tight">My Profile</h1>
-        </div>
-        <p class="text-muted-foreground max-w-lg">
-          View and manage your Pocket ID profile information
-        </p>
-      </div>
-    </div>
-  </div>
+
+  <HeroHeader
+    title="My Profile"
+    description="View and manage your Pocket ID profile information"
+    icon={User}
+  />
 
   <div class="grid gap-6">
     <!-- Profile Information Card -->
