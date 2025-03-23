@@ -96,7 +96,7 @@
 </script>
 
 <Card.Root
-  class="h-full overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-2px] duration-300 border flex flex-col bg-card animate-fade-in"
+  class="h-full flex flex-col justify-between overflow-hidden hover:shadow-lg transition-all hover:translate-y-[-2px] duration-300 border bg-card animate-fade-in"
   style="opacity: 0; transform: translateY(10px); animation-delay: {animationDelay}; animation-fill-mode: forwards;"
 >
   <!-- Top colored bar with gradient -->
@@ -105,7 +105,7 @@
     style="background: {generateGradient(client.name)};"
   ></div>
 
-  <div class="flex items-start p-5 gap-4">
+  <div class="flex items-start p-5 gap-4 flex-1">
     <!-- Logo with backdrop -->
     <div
       class="rounded-xl flex-shrink-0 flex items-center justify-center w-16 h-16 p-2 border shadow-sm"
@@ -144,9 +144,9 @@
 
       <!-- Access Group Badge with Label -->
       {#if client.accessGroups && client.accessGroups.length > 0}
-        <div class="flex items-center gap-2 mt-2">
-          <span class="text-xs text-muted-foreground">Access Group:</span>
-          <div class="inline-flex h-5">
+        <div class="mt-2">
+          <div class="text-xs text-muted-foreground mb-1">Access Group:</div>
+          <div class="inline-flex h-5 flex-wrap">
             {#each client.accessGroups.slice(0, 1) as group}
               <Badge
                 variant={client.restrictedAccess ? "destructive" : "secondary"}
