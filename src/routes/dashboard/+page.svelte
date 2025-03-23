@@ -5,9 +5,9 @@
   import { Badge } from "$lib/components/ui/badge";
   import type { Client, PageServerData, UserGroup } from "$lib/types";
   import { onMount } from "svelte";
+  import { Users } from "@lucide/svelte";
 
   interface Props {
-    // Get data from the server load function - now includes filtered clients and user groups
     data: PageServerData;
   }
 
@@ -101,12 +101,40 @@
           These are the applications you can sign into using your Pocket ID
           account
         </p>
+        <!-- Update the groups section in the dashboard to match the settings page style -->
         {#if userGroups.length > 0}
-          <div class="mt-2 flex flex-wrap gap-2">
-            <span class="text-xs text-muted-foreground">Your groups:</span>
-            {#each userGroups as group}
-              <Badge variant="secondary" class="text-xs">{group.name}</Badge>
-            {/each}
+          <div class="mt-3 border rounded-md p-3 bg-muted/10">
+            <div class="flex items-center gap-2 mb-2">
+              <Users class="h-4 w-4 text-muted-foreground" />
+              <span class="text-sm font-medium"
+                >Your Groups ({userGroups.length})</span
+              >
+            </div>
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2"
+            >
+              {#each userGroups as group (group.id)}
+                <Badge
+                  variant="secondary"
+                  class="justify-center py-1.5 px-2 text-xs flex items-center gap-1"
+                >
+                  <span class="truncate">{group.name}</span>
+                </Badge>
+              {/each}
+            </div>
+            {#if userGroups.length > 10}
+              <div class="mt-2 text-xs text-muted-foreground">
+                Showing {Math.min(10, userGroups.length)} of {userGroups.length}
+                groups
+              </div>
+            {/if}
+          </div>
+        {:else}
+          <div
+            class="mt-3 border rounded-md p-3 bg-muted/10 text-muted-foreground flex items-center gap-2"
+          >
+            <Users class="h-4 w-4" />
+            <span class="text-sm">You are not assigned to any groups</span>
           </div>
         {/if}
       </div>
