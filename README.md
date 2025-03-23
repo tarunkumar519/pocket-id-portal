@@ -12,6 +12,7 @@ The Pocket ID Portal provides a user-friendly interface for accessing and managi
 - **OIDC Authentication**: Secure login via your Pocket ID instance.
 - **Application Dashboard**: View and access all authorized applications
 - **User Profile**: View your profile information
+- **Passkeys**: View the passkeys assigned to your Pocket ID Account
 - **Group Management**: See which groups you belong to
 - **Preferences**: Customize the portal experience with theme and landing page settings
 - **Responsive Design**: Works well on desktop and mobile devices
