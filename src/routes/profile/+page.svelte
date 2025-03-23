@@ -110,8 +110,7 @@
                 {#if user?.email_verified}
                   <Badge
                     variant="outline"
-                    class="bg-green-500/10 text-green-600 border-green-200"
-                    >Verified Email</Badge
+                    class="bg-green-500/10 text-green-600">Verified Email</Badge
                   >
                 {/if}
               </div>
@@ -140,7 +139,7 @@
                 {#if user?.email_verified}
                   <Badge
                     variant="outline"
-                    class="bg-green-500/10 text-green-600 border-green-200 text-xs"
+                    class="bg-green-500/10 text-green-600 text-xs"
                   >
                     Verified
                   </Badge>
