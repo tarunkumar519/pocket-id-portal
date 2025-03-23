@@ -5,7 +5,7 @@
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
   import { Separator } from "$lib/components/ui/separator";
-  import { ArrowRight, Lock } from "@lucide/svelte";
+  import { ArrowRight, Lock, LockOpen } from "@lucide/svelte";
 
   interface Props {
     client: {
@@ -169,6 +169,11 @@
         <div class="flex items-center gap-1 mt-2 text-xs text-destructive">
           <Lock class="w-4 h-4" />
           <span>Restricted access</span>
+        </div>
+      {:else}
+        <div class="flex items-center gap-1 mt-2 text-xs text-green-500">
+          <LockOpen class="w-4 h-4" />
+          <span>Unrestricted access</span>
         </div>
       {/if}
     </div>
