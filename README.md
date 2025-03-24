@@ -1,7 +1,7 @@
 # Pocket ID Portal
 
 > [!WARNING]
-> This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID. There may be certain things (outside of the pocket-id api info) that dont work currently.
+> This project is meant to be an example of how API Keys can be used to build certain things using information from PocketID.
 
 ## Overview
 
