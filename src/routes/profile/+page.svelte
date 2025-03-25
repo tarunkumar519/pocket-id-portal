@@ -54,23 +54,6 @@
       day: "numeric",
     });
   }
-
-  // Helper function to check if key is expired
-  function isExpired(expiresAt: string | undefined): boolean {
-    if (!expiresAt) return false;
-    const now = new Date();
-    const expiry = new Date(expiresAt);
-    return expiry < now;
-  }
-
-  // Helper function to check if key is expiring soon (within 7 days)
-  function isExpiringSoon(expiresAt: string | undefined): boolean {
-    if (!expiresAt) return false;
-    const now = new Date();
-    const expiry = new Date(expiresAt);
-    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return expiry > now && expiry < sevenDaysFromNow;
-  }
 </script>
 
 <svelte:head>
