@@ -82,7 +82,7 @@
     icon={LayoutDashboard}
   >
     {#snippet actions()}
-        <div  class="relative w-full md:w-auto">
+      <div class="relative w-full md:w-auto">
         <div
           class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
         >
@@ -95,7 +95,7 @@
           />
         </div>
       </div>
-      {/snippet}
+    {/snippet}
   </HeroHeader>
 
   {#if error}
@@ -255,7 +255,7 @@
                     <!-- Pagination controls with improved styling -->
                     {#if Math.ceil(totalItems / itemsPerPage) > 1}
                       <div
-                        class="absolute bottom-0 left-0 right-0 py-3 flex justify-center"
+                        class="absolute bottom-0 left-0 right-0 pt-5 flex justify-center"
                       >
                         <div
                           class="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full border shadow-sm"

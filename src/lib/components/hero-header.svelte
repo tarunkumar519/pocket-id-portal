@@ -5,7 +5,7 @@
     title: string;
     description?: string;
     icon: typeof IconType;
-    actions: () => any;
+    actions?: () => any;
   }
 
   let {
