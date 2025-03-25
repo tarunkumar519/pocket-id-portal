@@ -5,3 +5,4 @@ export * from "./user-info.type";
 export * from "./user-group.type";
 export * from "./api-error.type";
 export * from "./portal.types";
+export * from "./api-key.type";

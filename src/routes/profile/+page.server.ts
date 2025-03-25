@@ -1,6 +1,8 @@
 import type { PageServerLoad } from "./$types";
 import { UserService } from "$lib/services/user-service";
 import { OIDCClientService } from "$lib/services/oidc-client-service";
+import { ApiKeyService } from "$lib/services/api-key-service";
+import type { UserGroup, ApiKey } from "$lib/types";
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
   try {
@@ -11,16 +13,35 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     const userId = UserService.getUserIdFromCookies(cookies);
 
     // Default response
-    let userGroups = [];
-    let passkeys = [];
-    let error = null;
+    let userGroups: UserGroup[] = [];
+    let passkeys: any[] = [];
+    let apiKeys: ApiKey[] = [];
+    let apiKeysPagination = null;
+    let error: string | null = null;
 
-    // If we have a user ID, fetch their groups and passkeys
+    // If we have a user ID, fetch the user data
     if (userId) {
       try {
         // Fetch fresh data every time for profile page
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
         passkeys = await UserService.fetchUserPasskeys(userId, fetch, headers);
+
+        // Fetch API keys and extract pagination data
+        const apiKeysResponse = await ApiKeyService.fetchApiKeys(
+          fetch,
+          headers
+        );
+
+        if (apiKeysResponse.data && Array.isArray(apiKeysResponse.data)) {
+          apiKeys = apiKeysResponse.data;
+
+          // Extract pagination data if present
+          if (apiKeysResponse.pagination) {
+            apiKeysPagination = apiKeysResponse.pagination;
+          }
+        } else {
+          apiKeys = apiKeysResponse.data || [];
+        }
       } catch (err) {
         console.warn("Error fetching user data for profile page:", err);
         error =
@@ -33,6 +54,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     return {
       userGroups,
       passkeys,
+      apiKeys,
+      apiKeysPagination,
       status: error ? "error" : "success",
       error,
     };
@@ -41,6 +64,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     return {
       userGroups: [],
       passkeys: [],
+      apiKeys: [],
+      apiKeysPagination: null,
       status: "error",
       error: error instanceof Error ? error.message : "Unknown error",
     };

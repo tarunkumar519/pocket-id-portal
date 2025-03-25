@@ -4,15 +4,26 @@
   import * as Card from "$lib/components/ui/card";
   import { env } from "$env/dynamic/public";
   import { Badge } from "$lib/components/ui/badge";
-  import { Users, User, Shield, Key } from "@lucide/svelte";
-  import type { UserGroup } from "$lib/types";
+  import {
+    Users,
+    User,
+    Shield,
+    Key,
+    KeyRound,
+    Clock,
+    AlertCircle,
+  } from "@lucide/svelte";
+  import type { UserGroup, ApiKey } from "$lib/types";
   import HeroHeader from "$lib/components/hero-header.svelte";
+  import ApiKeysList from "$lib/components/api-key-list.svelte";
 
   interface Props {
     // Get data from the server load function
     data: {
       userGroups: UserGroup[];
       passkeys: any[];
+      apiKeys: ApiKey[];
+      apiKeysPagination: any;
       status: "success" | "error";
       error: string | null;
     };
@@ -23,11 +34,43 @@
   // User profile data
   let user = $derived($auth.user);
 
-  // Get user groups from server-loaded data
+  // Get user data from server-loaded data
   let userGroups: UserGroup[] = $derived(data.userGroups || []);
   let passkeys = $derived(data.passkeys || []);
+  let apiKeys: ApiKey[] = $derived(data.apiKeys || []);
   let dataError = $derived(data.status === "error" ? data.error : null);
   let loading = $derived(false);
+
+  // Helper function to format date
+  function formatDate(dateString: string | undefined): string {
+    if (!dateString) return "Never";
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid date";
+
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  // Helper function to check if key is expired
+  function isExpired(expiresAt: string | undefined): boolean {
+    if (!expiresAt) return false;
+    const now = new Date();
+    const expiry = new Date(expiresAt);
+    return expiry < now;
+  }
+
+  // Helper function to check if key is expiring soon (within 7 days)
+  function isExpiringSoon(expiresAt: string | undefined): boolean {
+    if (!expiresAt) return false;
+    const now = new Date();
+    const expiry = new Date(expiresAt);
+    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return expiry > now && expiry < sevenDaysFromNow;
+  }
 </script>
 
 <svelte:head>
@@ -353,6 +396,48 @@
           <Button variant="outline" class="gap-2">
             <Key class="h-4 w-4" />
             Manage Passkeys in Pocket ID
+          </Button>
+        </a>
+      </Card.Footer>
+    </Card.Root>
+
+    <!-- API Keys Card -->
+    <Card.Root
+      class="overflow-hidden border shadow-sm animate-fade-in"
+      style="animation-delay: 250ms;"
+    >
+      <Card.Header class="bg-card border-b px-6 pb-5">
+        <div class="flex items-center gap-3">
+          <div class="bg-primary/10 p-1.5 rounded-md">
+            <KeyRound class="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <Card.Title>API Keys</Card.Title>
+            <Card.Description class="text-xs mt-1">
+              Your API keys for programmatic access to Pocket ID
+            </Card.Description>
+          </div>
+        </div>
+      </Card.Header>
+
+      <Card.Content class="px-6 pt-8 pb-8">
+        <ApiKeysList
+          {apiKeys}
+          isLoading={loading}
+          error={dataError}
+          pagination={data.apiKeysPagination}
+        />
+      </Card.Content>
+
+      <Card.Footer class="px-6 py-4 bg-muted/5 border-t">
+        <a
+          href={`${env.PUBLIC_OIDC_ISSUER}/settings/admin/api-keys`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button variant="outline" class="gap-2">
+            <KeyRound class="h-4 w-4" />
+            Manage API Keys in Pocket ID
           </Button>
         </a>
       </Card.Footer>
