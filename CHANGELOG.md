@@ -1,3 +1,14 @@
+## [1.4.0](https://github.com/pocket-id/pocket-id-portal/compare/v1.3.3...v1.4.0) (2025-03-25)
+
+### Features
+
+* add listing of api keys for the current user ([86cf9b6](https://github.com/pocket-id/pocket-id-portal/commit/86cf9b6973e7589f7b7eb24b032c54ca46565a4e))
+* **debug:** add cache management section if in dev mode or on localhost ([fb4e679](https://github.com/pocket-id/pocket-id-portal/commit/fb4e679f81753571e1f3aa22207973343dce598c))
+
+### Bug Fixes
+
+* **client-card:** make sizing consistent, relayout badges ([5224dbe](https://github.com/pocket-id/pocket-id-portal/commit/5224dbe981d6546226aae6e7787856ff75b0414a))
+* **oidc-auth:** move from client side to server side ([bdca643](https://github.com/pocket-id/pocket-id-portal/commit/bdca643aaa5c95cfa416e3f46587de31c2e46d9e))
 ## [1.3.3](https://github.com/pocket-id/pocket-id-portal/compare/v1.3.2...v1.3.3) (2025-03-23)
 
 ### Bug Fixes
