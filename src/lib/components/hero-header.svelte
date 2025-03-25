@@ -24,13 +24,11 @@
   >
     <div class="space-y-2">
       <div class="flex items-center gap-3">
-        {#if icon}
-          <div class="bg-primary/10 p-2 rounded-full">
-            {#if icon}{@const Icon = icon}
-              <Icon class="h-6 w-6 text-primary" />
-            {/if}
-          </div>
-        {/if}
+        <div class="bg-primary/10 p-2 rounded-full">
+          {#if icon}{@const Icon = icon}
+            <Icon class="h-6 w-6 text-primary" />
+          {/if}
+        </div>
         <h1 class="text-3xl font-bold tracking-tight">{title}</h1>
       </div>
       {#if description}

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { run } from "svelte/legacy";
-
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth.store";
@@ -42,7 +40,7 @@
   }
 
   // Re-check authorization when auth state changes
-  run(() => {
+  $effect(() => {
     if ($auth) checkAuthorization();
   });
 </script>

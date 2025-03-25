@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
-  import { env } from "$env/dynamic/public";
   import * as Card from "$lib/components/ui/card";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
