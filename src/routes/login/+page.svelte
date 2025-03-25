@@ -3,11 +3,15 @@
   import { getLogoUrl } from "$lib/utils/oidc-urls.util";
   import { ApplicationConfigurationService } from "$lib/services/application-configuration-service";
   import { onMount } from "svelte";
+  import { page } from "$app/stores";
   import {
     buildAuthorizationUrl,
     generateState,
     generateNonce,
   } from "$lib/auth";
+
+  // Get return URL from query parameter
+  let returnUrl = $derived($page.url.searchParams.get("returnUrl") || "/");
 
   let isLoading = $state(false);
   let errorMessage = $state("");
@@ -44,6 +48,11 @@
         fallbackImageExists = false;
       };
       img.src = staticBackgroundPath;
+    }
+
+    // Store the return URL in sessionStorage
+    if (typeof sessionStorage !== "undefined" && returnUrl !== "/") {
+      sessionStorage.setItem("returnUrl", returnUrl);
     }
   });
 

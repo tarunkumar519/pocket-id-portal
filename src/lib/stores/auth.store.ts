@@ -19,8 +19,8 @@ function createAuthStore() {
     isAuthenticated: false,
     user: null,
     tokens: null,
-    loading: true,
-    initialized: false,
+    loading: !browser, // Only show loading on client-side
+    initialized: !browser, // Consider SSR as already initialized
   };
 
   const { subscribe, set, update } = writable<AuthStore>(initialState);
@@ -36,6 +36,9 @@ function createAuthStore() {
   return {
     subscribe,
     init: () => {
+      // Skip initialization on server
+      if (!browser) return;
+
       update((state) => ({ ...state, loading: true }));
 
       try {
@@ -63,8 +66,19 @@ function createAuthStore() {
         });
       }
     },
+    // Server-side initialization with provided user and tokens
+    serverInit: (user: UserInfo | null, tokens: TokenResponse | null) => {
+      // This method is meant to be called from hooks.server.ts or similar
+      set({
+        isAuthenticated: !!user && !!tokens,
+        user,
+        tokens,
+        loading: false,
+        initialized: true,
+      });
+    },
     setUser: (user: UserInfo, tokens: TokenResponse) => {
-      // Set userId in a cookie for server-side access
+      // Only try to set cookies if we're in the browser
       if (browser && user?.sub) {
         // Use a longer expiration time for the user_id cookie (30 days)
         const longMaxAge = 30 * 24 * 60 * 60; // 30 days in seconds
@@ -74,7 +88,7 @@ function createAuthStore() {
         document.cookie = `user_id=${user.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax; secure`;
         console.log(
           `Set user_id cookie with domain ${domain} and 30-day expiration:`,
-          user.sub,
+          user.sub
         );
 
         // Standard token expiration for the other cookies
@@ -85,10 +99,10 @@ function createAuthStore() {
 
         // Also store the user data in auth_user cookie
         document.cookie = `auth_user=${JSON.stringify(
-          user,
+          user
         )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax; secure`;
         document.cookie = `auth_token=${JSON.stringify(
-          tokens,
+          tokens
         )}; path=/; max-age=${tokenMaxAge}; domain=${domain}; SameSite=Lax; secure`;
       }
 
@@ -101,9 +115,12 @@ function createAuthStore() {
       });
     },
     clearUser: () => {
-      // Clear userId cookie
+      // Only try to clear cookies if we're in the browser
       if (browser) {
-        document.cookie = "user_id=; path=/; max-age=0; SameSite=Strict; secure";
+        const domain = window.location.hostname;
+        document.cookie = `user_id=; path=/; max-age=0; domain=${domain}; SameSite=Lax; secure`;
+        document.cookie = `auth_user=; path=/; max-age=0; domain=${domain}; SameSite=Lax; secure`;
+        document.cookie = `auth_token=; path=/; max-age=0; domain=${domain}; SameSite=Lax; secure`;
       }
 
       set({
@@ -122,6 +139,8 @@ function createAuthStore() {
       // Get userId from the current state
       return currentState.user?.sub || null;
     },
+    // Get the current state (useful for server-side operations)
+    getState: () => currentState,
   };
 }
 

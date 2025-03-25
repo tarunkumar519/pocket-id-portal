@@ -13,6 +13,7 @@
   let { data } = $props();
   let isLoading = $state(true);
   let errorMessage = $state("");
+  let redirectUrl = $state("/");
 
   onMount(() => {
     if (data.success) {
@@ -21,12 +22,26 @@
         if (data.tokens && data.userInfo) {
           storeAuthState(data.tokens, data.userInfo);
 
+          // Get the return URL from session storage if available
+          if (typeof sessionStorage !== "undefined") {
+            const returnUrl = sessionStorage.getItem("returnUrl");
+            if (returnUrl) {
+              redirectUrl = returnUrl;
+              sessionStorage.removeItem("returnUrl");
+            }
+          }
+
           // Set a dedicated user_id cookie for easier server-side access
           if (data.userInfo.sub) {
             const longMaxAge = 30 * 24 * 60 * 60; // 30 days in seconds
             const domain = window.location.hostname;
 
+            // Make sure the cookies are properly formatted
             document.cookie = `user_id=${data.userInfo.sub}; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
+
+            // Set the auth_session cookie which the server uses to check auth status
+            document.cookie = `auth_session=true; path=/; max-age=${longMaxAge}; domain=${domain}; SameSite=Lax`;
+
             console.log(
               `Set user_id cookie with domain ${domain} and 30-day expiration:`,
               data.userInfo.sub
@@ -49,8 +64,8 @@
 
         // Redirect to dashboard with a slight delay to ensure state is updated
         setTimeout(() => {
-          goto("/");
-        }, 500);
+          goto(redirectUrl);
+        }, 1000); // Slightly longer delay to ensure cookies are properly set
       } catch (error) {
         console.error("Error storing auth state:", error);
         errorMessage = "Error storing authentication data";

@@ -179,15 +179,24 @@ export function getAuthState(): {
     };
   }
 
-  const tokensStr = localStorage.getItem("auth_tokens");
-  const userInfoStr = localStorage.getItem("auth_user"); // Fixed: was "user_info"
-  const authTimeStr = localStorage.getItem("auth_time");
+  try {
+    const tokensStr = localStorage.getItem("auth_tokens");
+    const userInfoStr = localStorage.getItem("auth_user");
+    const authTimeStr = localStorage.getItem("auth_time");
 
-  return {
-    tokens: tokensStr ? JSON.parse(tokensStr) : null,
-    userInfo: userInfoStr ? JSON.parse(userInfoStr) : null,
-    authTime: authTimeStr ? parseInt(authTimeStr, 10) : null,
-  };
+    return {
+      tokens: tokensStr ? JSON.parse(tokensStr) : null,
+      userInfo: userInfoStr ? JSON.parse(userInfoStr) : null,
+      authTime: authTimeStr ? parseInt(authTimeStr, 10) : null,
+    };
+  } catch (error) {
+    console.error("Error getting auth state:", error);
+    return {
+      tokens: null,
+      userInfo: null,
+      authTime: null,
+    };
+  }
 }
 
 // Store auth state in localStorage and cookies
@@ -258,6 +267,12 @@ export function clearAuthState(preserveUserId: boolean = false): void {
 
 // Check if user is authenticated
 export function isAuthenticated(): boolean {
+  if (typeof window === "undefined") {
+    // We can't determine authentication status on the server
+    // without additional context, so default to false
+    return false;
+  }
+
   const { tokens, authTime } = getAuthState();
   if (!tokens || !authTime) return false;
 
