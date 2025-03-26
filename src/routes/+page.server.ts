@@ -1,15 +1,35 @@
+import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { OIDCClientService } from "$lib/services/oidc-client-service";
 import type { PageServerData } from "$lib/types";
 import { UserService } from "$lib/services/user-service";
+import { config } from "$lib/stores/portal-config.store";
 
 /**
- * Server load function for fetching client data
+ * Server load function for fetching client data and handling redirects
  */
 export const load: PageServerLoad<PageServerData> = async ({
   fetch,
   cookies,
+  url,
+  locals,
 }) => {
+  // First handle redirects for the root path based on authentication status
+  if (url.pathname === "/") {
+    // If we have auth info in locals from hooks.server.ts, use it
+    if (locals.isAuthenticated) {
+      // Get landing page preference from cookie or use default
+      const landingPageCookie = cookies.get("portal_landing_page");
+      const preferredLandingPage = landingPageCookie || "dashboard";
+
+      // Redirect to the preferred landing page
+      throw redirect(302, `/${preferredLandingPage}`);
+    } else {
+      // If not authenticated, redirect to login
+      throw redirect(302, "/login");
+    }
+  }
+
   try {
     // Get authentication headers
     const headers = await OIDCClientService.getAuthHeaders(cookies);

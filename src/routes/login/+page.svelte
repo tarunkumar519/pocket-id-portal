@@ -2,74 +2,95 @@
   import { env } from "$env/dynamic/public";
   import { getLogoUrl } from "$lib/utils/oidc-urls.util";
   import { ApplicationConfigurationService } from "$lib/services/application-configuration-service";
-  import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import { resource, watch } from "runed";
   import {
     buildAuthorizationUrl,
     generateState,
     generateNonce,
   } from "$lib/auth";
 
-  // Get return URL from query parameter
-  let returnUrl = $derived($page.url.searchParams.get("returnUrl") || "/");
+  // Get return URL from query parameter (works with SSR)
+  const returnUrl = $page.url.searchParams.get("returnUrl") || "/";
 
+  // State variables
   let isLoading = $state(false);
   let errorMessage = $state("");
-  let backgroundImageUrl: string | null = $state(null);
-  let fallbackImageExists = $state(true); // Assume fallback exists until proven otherwise
 
-  // Generate the logo URL using the utility function
+  // These can be initialized during SSR
   const logoUrl = getLogoUrl(env.PUBLIC_OIDC_ISSUER);
-  const staticBackgroundPath = "/background.jpg"; // Path to static background image
+  const staticBackgroundPath = "/background.jpg";
 
+  // Use resource for background image loading
+  const backgroundResource = resource.pre(
+    () => browser, // Only activate when in browser
+    async () => {
+      try {
+        // Try to load dynamic background
+        const dynamicBg =
+          await ApplicationConfigurationService.fetchBackgroundImage();
+        if (dynamicBg) return { url: dynamicBg, source: "dynamic" };
+
+        // Check if static fallback exists
+        const fallbackExists = await checkImageExists(staticBackgroundPath);
+        if (fallbackExists)
+          return { url: staticBackgroundPath, source: "static" };
+
+        // No images available
+        return { url: null, source: "none" };
+      } catch (error) {
+        console.warn("Failed to load background:", error);
+        return { url: null, source: "error" };
+      }
+    }
+  );
+
+  // Compute redirect URI (SSR safe)
   const redirectUri = env.PUBLIC_APP_URL
     ? `${env.PUBLIC_APP_URL}/callback`
-    : typeof window !== "undefined"
+    : browser
       ? `${window.location.origin}/callback`
       : "http://localhost:3000/callback";
 
-  // Only fetch the background image on the client side
-  onMount(async () => {
-    try {
-      backgroundImageUrl =
-        await ApplicationConfigurationService.fetchBackgroundImage();
-    } catch (error) {
-      console.warn("Failed to load background image:", error);
-      backgroundImageUrl = null;
-    }
+  // Helper to check if an image exists
+  async function checkImageExists(url: string): Promise<boolean> {
+    if (!browser) return false;
 
-    // Check if the static fallback image exists
-    if (!backgroundImageUrl && typeof window !== "undefined") {
+    return new Promise((resolve) => {
       const img = new Image();
-      img.onload = () => {
-        fallbackImageExists = true;
-      };
-      img.onerror = () => {
-        fallbackImageExists = false;
-      };
-      img.src = staticBackgroundPath;
-    }
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
 
-    // Store the return URL in sessionStorage
-    if (typeof sessionStorage !== "undefined" && returnUrl !== "/") {
+  // Store return URL when component mounts
+  onMount(() => {
+    if (browser && returnUrl !== "/") {
       sessionStorage.setItem("returnUrl", returnUrl);
     }
   });
 
+  // Handle login action
   function handleLogin() {
     isLoading = true;
     errorMessage = "";
 
     try {
+      if (!browser) {
+        throw new Error("Login is only available in browser");
+      }
+
       // Generate state and nonce
       const state = generateState();
       const nonce = generateNonce();
 
       // Store state and nonce in sessionStorage
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("oidc_state", state);
-        sessionStorage.setItem("oidc_nonce", nonce);
-      }
+      sessionStorage.setItem("oidc_state", state);
+      sessionStorage.setItem("oidc_nonce", nonce);
 
       // Build authorization URL
       const authUrl = buildAuthorizationUrl(
@@ -81,24 +102,30 @@
         nonce
       );
 
-      // Redirect to authorization endpoint
-      if (typeof window !== "undefined") {
-        window.location.href = authUrl;
-      }
+      // Use goto for client-side navigation
+      window.location.href = authUrl;
     } catch (error) {
       errorMessage =
         error instanceof Error ? error.message : "An error occurred";
       isLoading = false;
     }
   }
+
+  // Get background style based on resource state
+  const getBackgroundStyle = () => {
+    if (!backgroundResource || !backgroundResource.current?.url) {
+      return "background: linear-gradient(to bottom right, #6d28d9, #4c1d95, #000);";
+    }
+    return `background-image: url(${backgroundResource.current?.url}); background-size: cover; background-position: center;`;
+  };
 </script>
 
 <svelte:head>
-  <title>Pocket ID Portal - Login</title>
+  <title>Login - Pocket ID Portal</title>
 </svelte:head>
 
 <div class="flex min-h-screen">
-  <!-- Left Section -->
+  <!-- Left Section - Login Form -->
   <div
     class="flex flex-col justify-center items-center w-full md:w-1/2 bg-background p-8 space-y-6 animate-fade-in"
   >
@@ -136,18 +163,13 @@
     </div>
   </div>
 
-  <!-- Right Section -->
+  <!-- Right Section - Background Image -->
   <div
-    class="h-screen w-[calc(100vw-650px)] rounded-l-[60px] object-cover"
-    style="background-image: url({backgroundImageUrl ||
-      (fallbackImageExists ? staticBackgroundPath : '')}); 
-      background-size: cover; background-position: center;"
+    class="hidden md:block h-screen w-1/2 lg:w-[calc(100vw-650px)] rounded-l-[60px]"
+    style={getBackgroundStyle()}
   >
-    <!-- Background graphic - shown only when no images are available -->
-    {#if !backgroundImageUrl && !fallbackImageExists}
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-purple-700 via-indigo-800 to-black"
-      ></div>
+    <!-- Show fallback design when no images are available -->
+    {#if backgroundResource?.current?.source === "none" || backgroundResource?.current?.source === "error"}
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative">
           <div
