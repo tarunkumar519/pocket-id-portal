@@ -3,6 +3,7 @@
   import type { ApiKey } from "$lib/types";
   import { KeyRound, Clock, AlertCircle } from "@lucide/svelte";
   import * as Pagination from "$lib/components/ui/pagination";
+  import { watch } from "runed";
 
   interface PaginationData {
     totalPages: number;
@@ -34,17 +35,19 @@
     pagination?.totalPages || Math.ceil(totalItems / itemsPerPage)
   );
 
-  // Get the current page items
-  $effect(() => {
-    // If pagination data is provided, we assume the items are already paginated from the API
-    // Otherwise, we'll paginate locally
-    if (!pagination) {
-      paginatedApiKeys = getPaginatedItems();
-    }
-  });
-
   let paginatedApiKeys = $state<ApiKey[]>(
     pagination ? apiKeys : getPaginatedItems()
+  );
+
+  watch(
+    () => [apiKeys, pagination, currentPage, itemsPerPage],
+    () => {
+      // If pagination data is provided, we assume the items are already paginated from the API
+      // Otherwise, we'll paginate locally
+      if (!pagination) {
+        paginatedApiKeys = getPaginatedItems();
+      }
+    }
   );
 
   // Function to handle page changes

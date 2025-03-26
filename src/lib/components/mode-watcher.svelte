@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { config } from "$lib/stores/portal-config.store";
   import { browser } from "$app/environment";
+  import { watch } from "runed";
 
   let themeChangeObserver: MutationObserver | undefined;
 
@@ -51,10 +52,13 @@
     };
   });
 
-  // Update when config changes
-  $effect(() => {
-    if (browser && $config) {
-      applyTheme($config.theme);
+  watch(
+    () => $config.theme,
+    (newTheme, oldTheme) => {
+      if (browser) {
+        console.log(`Theme changed from ${oldTheme} to ${newTheme}`);
+        applyTheme(newTheme);
+      }
     }
-  });
+  );
 </script>

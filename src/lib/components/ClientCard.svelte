@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { watch } from "runed";
   import * as Card from "$lib/components/ui/card";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
@@ -16,10 +17,10 @@
       logoError?: boolean;
       accessGroups?: string[];
       restrictedAccess?: boolean;
-      callback_urls?: string[]; // Added to support callback URLs
+      callback_urls?: string[];
     };
-    index?: number; // Add index prop for staggered animation
-    columns?: number; // Number of columns in the grid
+    index?: number;
+    columns?: number;
   }
 
   let {
@@ -37,35 +38,29 @@
   function calculateAnimationDelay(index: number, columns: number): string {
     const row = Math.floor(index / columns);
     const col = index % columns;
-
-    // Combine row and column to get a diagonal wave effect
-    // The higher the sum, the later the animation
     const delay = (row + col) * 60; // 60ms per step
-
     return `${delay}ms`;
   }
 
-  const animationDelay = calculateAnimationDelay(index, columns);
+  // Reactive state variables
+  let animationDelay = $state(calculateAnimationDelay(index, columns));
+  let launchUrl = $state(getBaseUrl(client.callback_urls));
+  let gradientBackground = $state(generateGradient(client.name));
+  let logoBackdrop = $state(generateLogoBackdrop(client.name));
 
   // Extract base URL from callback URL
-  // For example: https://example.test.com/callback -> https://example.test.com
   function getBaseUrl(callbackUrls: string[] | undefined): string {
-    // If no callback URLs are available, return a placeholder
     if (!callbackUrls || callbackUrls.length === 0) {
       console.warn(`No callback URLs found for client ${client.name}`);
-      return "#"; // Return a hash to prevent navigation
+      return "#";
     }
 
     try {
-      // Take the first callback URL
       const callbackUrl = callbackUrls[0];
-
-      // Parse the URL to extract just the origin (protocol + domain + port)
       const url = new URL(callbackUrl);
       return url.origin;
     } catch (error) {
       console.error(`Error parsing callback URL for ${client.name}:`, error);
-      // Return a hash to prevent navigation
       return "#";
     }
   }
@@ -89,8 +84,28 @@
     return `hsla(${hue}, 70%, 97%, 0.8)`;
   }
 
-  // Get the launch URL directly from the client's callback URLs
-  let launchUrl = $state(getBaseUrl(client.callback_urls));
+  // Watch for changes in relevant properties
+  watch(
+    () => [index, columns],
+    ([newIndex, newColumns]) => {
+      animationDelay = calculateAnimationDelay(newIndex, newColumns);
+    }
+  );
+
+  watch(
+    () => client.callback_urls,
+    (newCallbackUrls) => {
+      launchUrl = getBaseUrl(newCallbackUrls);
+    }
+  );
+
+  watch(
+    () => client.name,
+    (newName) => {
+      gradientBackground = generateGradient(newName);
+      logoBackdrop = generateLogoBackdrop(newName);
+    }
+  );
 </script>
 
 <Card.Root
@@ -98,10 +113,7 @@
   style="opacity: 0; transform: translateY(10px); animation-delay: {animationDelay}; animation-fill-mode: forwards;"
 >
   <!-- Top colored bar with gradient -->
-  <div
-    class="h-3 w-full"
-    style="background: {generateGradient(client.name)};"
-  ></div>
+  <div class="h-3 w-full" style="background: {gradientBackground};"></div>
 
   <!-- Content area with reduced minimum height -->
   <div class="flex flex-col p-5 flex-1" style="min-height: 200px;">
@@ -111,7 +123,7 @@
       <div
         class="rounded-xl flex-shrink-0 flex items-center justify-center w-14 h-14 p-2 border shadow-sm"
         style="background: {client.hasLogo && !client.logoError
-          ? generateLogoBackdrop(client.name)
+          ? logoBackdrop
           : 'var(--primary-50, #f0f9ff)'};
                box-shadow: 0 2px 8px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.5);"
       >

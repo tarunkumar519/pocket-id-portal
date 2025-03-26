@@ -3,6 +3,7 @@
   import { goto } from "$app/navigation";
   import { auth } from "$lib/stores/auth.store";
   import { browser } from "$app/environment";
+  import { watch } from "runed";
 
   interface Props {
     requiredRole?: string | null;
@@ -14,14 +15,12 @@
   let isAuthorized = $state(false);
   let isLoading = $state(true);
 
-  onMount(() => {
-    // Only do client-side auth check if auth isn't initialized yet
-    if (!$auth.initialized) {
-      auth.init();
-    } else {
-      checkAuthorization();
-    }
-  });
+  // Initialize auth state if needed and check authorization immediately
+  if (!$auth.initialized && browser) {
+    auth.init();
+  } else {
+    checkAuthorization();
+  }
 
   function checkAuthorization() {
     isLoading = true;
@@ -52,12 +51,15 @@
     isLoading = false;
   }
 
-  // Re-check authorization when auth state changes
-  $effect(() => {
-    if ($auth.initialized) {
-      checkAuthorization();
+  // Watch for changes in auth state
+  watch(
+    () => [$auth.initialized, $auth.isAuthenticated, $auth.user],
+    ([initialized]) => {
+      if (initialized) {
+        checkAuthorization();
+      }
     }
-  });
+  );
 </script>
 
 {#if isLoading}
