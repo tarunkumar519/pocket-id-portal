@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/kmendell/pocket-id-portal/compare/v1.4.0...v1.4.1) (2025-04-16)
+
+### Bug Fixes
+
+* make sure ssr is used on some components ([a22e33f](https://github.com/kmendell/pocket-id-portal/commit/a22e33fac3dadeb8e890c2aa32a1c58d08408c3f))
+* move pagination to header ([8de7f49](https://github.com/kmendell/pocket-id-portal/commit/8de7f4922d7a7d31f59ba2cfd7e0be1216cfb950))
 ## [1.4.0](https://github.com/pocket-id/pocket-id-portal/compare/v1.3.3...v1.4.0) (2025-03-25)
 
 ### Features
