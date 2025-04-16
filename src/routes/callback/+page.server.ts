@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
       code,
       clientId || "",
       clientSecret || "",
-      redirectUri,
+      redirectUri
     );
 
     // Get user info on the server

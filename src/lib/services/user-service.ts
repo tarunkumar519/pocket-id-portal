@@ -1,6 +1,7 @@
 import { env } from "$env/dynamic/private";
 import { env as publicEnv } from "$env/dynamic/public";
 import type { UserGroup } from "$lib/types";
+import type { PocketIdUser } from "$lib/types/pocketid-user.type";
 import { CacheService } from "./cache-service";
 
 /**
@@ -145,6 +146,49 @@ export class UserService {
 
       // Don't cache errors this time - let's try again next time
       return [];
+    }
+  }
+
+  /**
+   * Fetch the current user's info (including isAdmin)
+   */
+  static async fetchCurrentUser(
+    fetch: typeof globalThis.fetch,
+    headers: Record<string, string>
+  ): Promise<PocketIdUser> {
+    const cacheKey = `current_user_info`;
+    const apiUrl = `${publicEnv.PUBLIC_OIDC_ISSUER}/api/users/me`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers,
+      });
+
+      if (!response.ok) {
+        console.error(
+          `API returned status ${response.status} for /api/users/me`
+        );
+        throw new Error(
+          `Failed to fetch current user info: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+
+      // Map API response to PocketIdUser type
+      const user: PocketIdUser = {
+        isAdmin: data.isAdmin,
+        // ...map other fields as needed
+      };
+
+      // Optionally cache the result
+      // CacheService.set(cacheKey, user, 5 * 60 * 1000);
+
+      return user;
+    } catch (error) {
+      console.error("Error fetching current user info:", error);
+      throw error;
     }
   }
 

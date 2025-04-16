@@ -18,6 +18,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     let apiKeys: ApiKey[] = [];
     let apiKeysPagination = null;
     let error: string | null = null;
+    let currentUserInfo: PocketIdUser | null = null;
 
     // If we have a user ID, fetch the user data
     if (userId) {
@@ -25,6 +26,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
         // Fetch fresh data every time for profile page
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
         passkeys = await UserService.fetchUserPasskeys(userId, fetch, headers);
+        currentUserInfo = await UserService.fetchCurrentUser(fetch, headers);
 
         // Fetch API keys and extract pagination data
         const apiKeysResponse = await ApiKeyService.fetchApiKeys(
@@ -58,6 +60,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
       apiKeysPagination,
       status: error ? "error" : "success",
       error,
+      currentUserInfo,
     };
   } catch (error) {
     console.error("Error in profile page server load function:", error);

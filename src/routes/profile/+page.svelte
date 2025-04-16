@@ -16,6 +16,7 @@
   import type { UserGroup, ApiKey } from "$lib/types";
   import HeroHeader from "$lib/components/hero-header.svelte";
   import ApiKeysList from "$lib/components/api-key-list.svelte";
+  import type { PocketIdUser } from "$lib/types/pocketid-user.type";
 
   interface Props {
     // Get data from the server load function
@@ -26,6 +27,7 @@
       apiKeysPagination: any;
       status: "success" | "error";
       error: string | null;
+      currentUserInfo: PocketIdUser;
     };
   }
 
@@ -126,6 +128,11 @@
                     variant="outline"
                     class="bg-green-500/10 text-green-600">Verified Email</Badge
                   >
+                {/if}
+                {#if data.currentUserInfo.isAdmin}
+                  <Badge variant="outline" class=" bg-red-500/10 text-red-600">
+                    Admin
+                  </Badge>
                 {/if}
               </div>
             </div>
