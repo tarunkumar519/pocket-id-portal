@@ -9,11 +9,7 @@ export const load: LayoutServerLoad = async ({ url, locals }) => {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // The auth check is now done in hooks.server.ts to avoid redundancy
-  // This function just provides layout data
-
-  // If it's a private route and there's no auth, hooks.server.ts should have already redirected
-  // This is just a safety check
+  // Safety check: redirect unauthenticated users from private routes
   if (!isPublicRoute && !locals.isAuthenticated) {
     console.log("Layout server load: user not authenticated, redirecting");
     throw redirect(303, `/login?returnUrl=${encodeURIComponent(pathname)}`);

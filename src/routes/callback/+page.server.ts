@@ -9,39 +9,25 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
   const state = url.searchParams.get("state");
   const error = url.searchParams.get("error");
 
-  // Check for error
   if (error) {
-    return {
-      success: false,
-      error,
-    };
+    return { success: false, error };
   }
 
-  // Validate state (in a real app, compare with stored state)
   if (!state) {
-    return {
-      success: false,
-      error: "Invalid state",
-    };
+    return { success: false, error: "Invalid state" };
   }
 
-  // Exchange code for tokens
   if (!code) {
-    return {
-      success: false,
-      error: "No authorization code",
-    };
+    return { success: false, error: "No authorization code" };
   }
 
   try {
-    // Client configuration from environment variables
     const clientId = env.PUBLIC_OIDC_CLIENT_ID;
     const clientSecret = privateEnv.OIDC_CLIENT_SECRET;
     const redirectUri = env.PUBLIC_APP_URL
       ? `${env.PUBLIC_APP_URL}/callback`
       : `${url.origin}/callback`;
 
-    // Exchange code for tokens on the server
     const tokens = await exchangeCodeForTokens(
       code,
       clientId || "",
@@ -49,10 +35,8 @@ export const load: PageServerLoad = async ({ url, cookies }) => {
       redirectUri
     );
 
-    // Get user info on the server
     const userInfo = await getUserInfo(tokens.access_token);
 
-    // Return the tokens and user info to the client
     return {
       success: true,
       tokens,

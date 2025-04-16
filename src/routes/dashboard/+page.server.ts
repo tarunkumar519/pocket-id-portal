@@ -12,30 +12,24 @@ export const load: PageServerLoad<PageServerData> = async ({
   cookies,
 }) => {
   try {
-    // Get authentication headers from cookies
     const headers = await OIDCClientService.getAuthHeaders(cookies);
-
-    // Get user ID if available
     const userId = UserService.getUserIdFromCookies(cookies);
+
     if (!userId) {
       console.warn("No user ID found in cookies");
     }
 
-    // Fetch client data (applications the user has access to) - now with caching
     const clientsData = await OIDCClientService.fetchClients(fetch, headers);
 
-    // Fetch user groups if we have a user ID - now with caching
     let userGroups = [];
     if (userId) {
       try {
         userGroups = await UserService.fetchUserGroups(userId, fetch, headers);
       } catch (error) {
         console.warn("Error fetching user groups:", error);
-        // Continue without groups
       }
     }
 
-    // Process clients with group access information
     const processedClients =
       await OIDCClientService.processClientsWithGroupAccess(
         clientsData,
@@ -44,10 +38,8 @@ export const load: PageServerLoad<PageServerData> = async ({
         userGroups
       );
 
-    // Add any dashboard-specific data transformations here
     const dashboardClients = processedClients.map((client) => ({
       ...client,
-      // Add any dashboard-specific properties here
       dashboardUrl: `/dashboard/apps/${client.client_id}`,
     }));
 

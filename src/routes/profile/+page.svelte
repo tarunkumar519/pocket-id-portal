@@ -42,20 +42,7 @@
   let apiKeys: ApiKey[] = $derived(data.apiKeys || []);
   let dataError = $derived(data.status === "error" ? data.error : null);
   let loading = $derived(false);
-
-  // Helper function to format date
-  function formatDate(dateString: string | undefined): string {
-    if (!dateString) return "Never";
-
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid date";
-
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  }
+  console.log(data.currentUserInfo);
 </script>
 
 <svelte:head>
