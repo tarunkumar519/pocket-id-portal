@@ -174,127 +174,112 @@
 
       <!-- Main Content - Applications Grid -->
       <div class="w-full md:w-3/4 flex flex-col h-[calc(100vh-16rem)]">
-        <!-- Adjust -16rem as needed based on header size -->
-        <div
-          class="rounded-xl border bg-card shadow-sm flex-grow flex flex-col overflow-hidden h-full animate-fade-in"
-          style="animation-delay: 150ms;"
-        >
-          <div class="p-5 border-b">
-            <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium flex items-center gap-2">
-                <Zap class="h-5 w-5 text-primary" />
-                Applications
-              </h3>
-              <div class="flex items-center gap-2">
-                <Badge variant="outline" class="bg-muted/30">
-                  {accessibleClients.length} apps
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex-grow overflow-auto p-5 pt-3">
-            {#if accessibleClients.length === 0}
-              <div
-                class="flex flex-col items-center justify-center py-12 text-center bg-muted/5 rounded-lg border-dashed border-2 my-4 mx-2"
-              >
-                <div class="rounded-full bg-muted/30 p-4 mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="text-muted-foreground"
-                  >
-                    <rect width="8" height="8" x="2" y="2" rx="1"></rect>
-                    <path d="M6 6h.01"></path>
-                    <rect width="8" height="8" x="14" y="2" rx="1"></rect>
-                    <path d="M18 6h.01"></path>
-                    <rect width="8" height="8" x="2" y="14" rx="1"></rect>
-                    <path d="M6 18h.01"></path>
-                    <rect width="8" height="8" x="14" y="14" rx="1"></rect>
-                    <path d="M18 18h.01"></path>
-                  </svg>
-                </div>
-                <h3 class="text-lg font-medium">No applications found</h3>
-                <p class="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                  You don't have access to any applications yet. Contact your
-                  administrator to request access.
-                </p>
-              </div>
-            {:else}
-              <div class="h-full relative">
-                <Pagination.Root count={totalItems} perPage={itemsPerPage}>
-                  {#snippet children({ pages, currentPage })}
-                    <div
-                      class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full h-full"
-                    >
-                      {#each getPaginatedClients(currentPage).filter((client) => searchTerm.trim() === "" || client.name
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase()) || client.description
-                            ?.toLowerCase()
-                            .includes(searchTerm.toLowerCase())) as client, i}
-                        <div
-                          class="min-h-[200px] animate-fade-in opacity-0"
-                          style="animation-delay: {200 + i * 75}ms"
-                        >
-                          <ClientCard
-                            {client}
-                            index={i}
-                            columns={gridColumns}
-                          />
-                        </div>
-                      {/each}
-                    </div>
-
-                    <!-- Pagination controls with improved styling -->
+        <Pagination.Root count={totalItems} perPage={itemsPerPage}>
+          {#snippet children({ pages, currentPage })}
+            <div
+              class="rounded-xl border bg-card shadow-sm flex-grow flex flex-col w-full overflow-hidden h-full animate-fade-in"
+              style="animation-delay: 150ms;"
+            >
+              <div class="p-5 border-b">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-lg font-medium flex items-center gap-2">
+                    <Zap class="h-5 w-5 text-primary" />
+                    Applications
+                  </h3>
+                  <div class="flex items-center gap-2">
+                    <Badge variant="outline" class="bg-muted/30">
+                      {accessibleClients.length} apps
+                    </Badge>
                     {#if Math.ceil(totalItems / itemsPerPage) > 1}
-                      <div
-                        class="absolute bottom-0 left-0 right-0 pt-5 flex justify-center"
-                      >
-                        <div
-                          class="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full border shadow-sm"
-                        >
-                          <Pagination.Content>
-                            <Pagination.Item>
-                              <Pagination.PrevButton />
-                            </Pagination.Item>
-
-                            {#each pages as page (page.key)}
-                              {#if page.type === "ellipsis"}
-                                <Pagination.Item>
-                                  <Pagination.Ellipsis />
-                                </Pagination.Item>
-                              {:else}
-                                <Pagination.Item>
-                                  <Pagination.Link
-                                    {page}
-                                    isActive={currentPage === page.value}
-                                  >
-                                    {page.value}
-                                  </Pagination.Link>
-                                </Pagination.Item>
-                              {/if}
-                            {/each}
-
-                            <Pagination.Item>
-                              <Pagination.NextButton />
-                            </Pagination.Item>
-                          </Pagination.Content>
-                        </div>
+                      <div class="ml-4">
+                        <Pagination.Content>
+                          <Pagination.Item>
+                            <Pagination.PrevButton />
+                          </Pagination.Item>
+                          {#each pages as page (page.key)}
+                            {#if page.type === "ellipsis"}
+                              <Pagination.Item>
+                                <Pagination.Ellipsis />
+                              </Pagination.Item>
+                            {:else}
+                              <Pagination.Item>
+                                <Pagination.Link
+                                  {page}
+                                  isActive={currentPage === page.value}
+                                >
+                                  {page.value}
+                                </Pagination.Link>
+                              </Pagination.Item>
+                            {/if}
+                          {/each}
+                          <Pagination.Item>
+                            <Pagination.NextButton />
+                          </Pagination.Item>
+                        </Pagination.Content>
                       </div>
                     {/if}
-                  {/snippet}
-                </Pagination.Root>
+                  </div>
+                </div>
               </div>
-            {/if}
-          </div>
-        </div>
+
+              <div class="flex-grow overflow-auto p-5 pt-3">
+                {#if accessibleClients.length === 0}
+                  <div
+                    class="flex flex-col items-center justify-center py-12 text-center bg-muted/5 rounded-lg border-dashed border-2 my-4 mx-2"
+                  >
+                    <div class="rounded-full bg-muted/30 p-4 mb-4">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="text-muted-foreground"
+                      >
+                        <rect width="8" height="8" x="2" y="2" rx="1"></rect>
+                        <path d="M6 6h.01"></path>
+                        <rect width="8" height="8" x="14" y="2" rx="1"></rect>
+                        <path d="M18 6h.01"></path>
+                        <rect width="8" height="8" x="2" y="14" rx="1"></rect>
+                        <path d="M6 18h.01"></path>
+                        <rect width="8" height="8" x="14" y="14" rx="1"></rect>
+                        <path d="M18 18h.01"></path>
+                      </svg>
+                    </div>
+                    <h3 class="text-lg font-medium">No applications found</h3>
+                    <p
+                      class="text-sm text-muted-foreground mt-1 max-w-sm mx-auto"
+                    >
+                      You don't have access to any applications yet. Contact
+                      your administrator to request access.
+                    </p>
+                  </div>
+                {:else}
+                  <div
+                    class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 w-full h-full"
+                  >
+                    {#each getPaginatedClients(currentPage).filter((client) => searchTerm.trim() === "" || client.name
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase()) || client.description
+                          ?.toLowerCase()
+                          .includes(searchTerm.toLowerCase())) as client, i}
+                      <div
+                        class="min-h-[200px] animate-fade-in opacity-0"
+                        style="animation-delay: {200 + i * 75}ms"
+                      >
+                        <ClientCard {client} index={i} columns={gridColumns} />
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            </div>
+          {/snippet}
+        </Pagination.Root>
       </div>
     </div>
   {/if}
