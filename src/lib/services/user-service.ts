@@ -178,8 +178,17 @@ export class UserService {
 
       // Map API response to PocketIdUser type
       const user: PocketIdUser = {
+        id: data.id,
+        username: data.username,
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
         isAdmin: data.isAdmin,
-        // ...map other fields as needed
+        userGroups: data.userGroups || [],
+        ldapId: data.ldapId || "",
+        locale: data.locale || "en",
+        customClaims: data.customClaims || {},
+        // Add any other required fields from PocketIdUser here
       };
 
       // Optionally cache the result
