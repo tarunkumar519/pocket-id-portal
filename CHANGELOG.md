@@ -1,3 +1,12 @@
+## [1.5.0](https://github.com/kmendell/pocket-id-portal/compare/v1.4.1...v1.5.0) (2025-06-05)
+
+### Features
+
+* add admin badge from currentUser api endpoint ([f25022b](https://github.com/kmendell/pocket-id-portal/commit/f25022ba300352969fb98274e60ed88e70a28591))
+
+### Bug Fixes
+
+* map user api reponse ([5a8aa3b](https://github.com/kmendell/pocket-id-portal/commit/5a8aa3b8d049c1e1e0f5c6ecda92f4833e1a42a8))
 ## [1.4.1](https://github.com/kmendell/pocket-id-portal/compare/v1.4.0...v1.4.1) (2025-04-16)
 
 ### Bug Fixes
