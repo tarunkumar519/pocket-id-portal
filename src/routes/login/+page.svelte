@@ -2,7 +2,7 @@
   import { env } from "$env/dynamic/public";
   import { getLogoUrl } from "$lib/utils/oidc-urls.util";
   import { ApplicationConfigurationService } from "$lib/services/application-configuration-service";
-  import { page } from "$app/stores";
+  import { page } from "$app/state";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
@@ -14,7 +14,7 @@
   } from "$lib/auth";
 
   // Get return URL from query parameter (works with SSR)
-  const returnUrl = $page.url.searchParams.get("returnUrl") || "/";
+  const returnUrl = page.url.searchParams.get("returnUrl") || "/";
 
   // State variables
   let isLoading = $state(false);
