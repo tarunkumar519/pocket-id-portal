@@ -67,7 +67,7 @@
       <Card.Header class="bg-card border-b px-6 pb-5">
         <div class="flex items-center gap-3">
           <div class="bg-primary/10 p-1.5 rounded-md">
-            <User class="h-4 w-4 text-primary" />
+            <User class="size-4 text-primary" />
           </div>
           <div>
             <Card.Title>Profile Information</Card.Title>
@@ -89,11 +89,11 @@
                 <img
                   src={user.picture}
                   alt="Profile"
-                  class="w-24 h-24 rounded-full object-cover border-4 border-primary/20"
+                  class="size-24 rounded-full object-cover border-4 border-primary/20"
                 />
               {:else}
                 <div
-                  class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center"
+                  class="size-24 rounded-full bg-primary/10 flex items-center justify-center"
                 >
                   <span class="text-3xl font-medium text-primary">
                     {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
@@ -185,7 +185,7 @@
           rel="noopener noreferrer"
         >
           <Button variant="outline" class="gap-2">
-            <User class="h-4 w-4" />
+            <User class="size-4" />
             Manage Profile in Pocket ID
           </Button>
         </a>
@@ -200,7 +200,7 @@
       <Card.Header class="bg-card border-b px-6 pb-5">
         <div class="flex items-center gap-3">
           <div class="bg-primary/10 p-1.5 rounded-md">
-            <Shield class="h-4 w-4 text-primary" />
+            <Shield class="size-4 text-primary" />
           </div>
           <div>
             <Card.Title>Access Groups</Card.Title>
@@ -215,7 +215,7 @@
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center gap-2">
             <div class="bg-primary/5 p-1 rounded-md">
-              <Users class="h-4 w-4 text-primary" />
+              <Users class="size-4 text-primary" />
             </div>
             <h3 class="font-medium">Your Access Groups</h3>
           </div>
@@ -248,16 +248,16 @@
                   class="w-full justify-between py-1.5 px-3 text-xs hover:border-primary/50"
                 >
                   <span class="truncate">{group.name}</span>
-                  <div class="w-2 h-2 rounded-full bg-primary/70"></div>
+                  <div class="size-2 rounded-full bg-primary/70"></div>
                 </Badge>
               </div>
             {/each}
           </div>
         {:else}
           <div
-            class="flex-grow text-muted-foreground text-sm flex items-center justify-center gap-2 p-6 border border-dashed rounded-lg bg-muted/5"
+            class="grow text-muted-foreground text-sm flex items-center justify-center gap-2 p-6 border border-dashed rounded-lg bg-muted/5"
           >
-            <Users class="h-4 w-4" />
+            <Users class="size-4" />
             <span>No groups assigned</span>
           </div>
         {/if}
@@ -272,7 +272,7 @@
       <Card.Header class="bg-card border-b px-6 pb-5">
         <div class="flex items-center gap-3">
           <div class="bg-primary/10 p-1.5 rounded-md">
-            <Key class="h-4 w-4 text-primary" />
+            <Key class="size-4 text-primary" />
           </div>
           <div>
             <Card.Title>Passkeys</Card.Title>
@@ -319,20 +319,20 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
               {#each passkeys as passkey, i (passkey.id)}
                 <div
-                  class="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-muted/30 to-muted/10 border
+                  class="flex items-center gap-3 p-4 rounded-xl bg-linear-to-br from-muted/30 to-muted/10 border
                          hover:shadow-md transition-all animate-fade-in opacity-0 relative overflow-hidden group"
                   style="animation-delay: {200 + i * 75}ms"
                 >
                   <div
-                    class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0
+                    class="absolute inset-0 bg-linear-to-r from-primary/5 to-transparent opacity-0
                               group-hover:opacity-100 transition-opacity duration-300"
                   ></div>
 
                   <div
-                    class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center
+                    class="size-12 rounded-full bg-primary/10 flex items-center justify-center
                               border-4 border-background shadow-sm relative z-10"
                   >
-                    <Key class="h-5 w-5 text-primary" />
+                    <Key class="size-5 text-primary" />
                   </div>
 
                   <div class="flex-1 relative z-10">
@@ -346,7 +346,7 @@
                       {#if passkey.device}
                         <!-- We need to somehow implement this in pocket id first -->
                         <!-- <div
-                          class="h-1 w-1 rounded-full bg-muted-foreground/30"
+                          class="size-1 rounded-full bg-muted-foreground/30"
                         ></div>
                         <Badge
                           variant="outline"
@@ -371,7 +371,7 @@
           rel="noopener noreferrer"
         >
           <Button variant="outline" class="gap-2">
-            <Key class="h-4 w-4" />
+            <Key class="size-4" />
             Manage Passkeys in Pocket ID
           </Button>
         </a>
@@ -386,7 +386,7 @@
       <Card.Header class="bg-card border-b px-6 pb-5">
         <div class="flex items-center gap-3">
           <div class="bg-primary/10 p-1.5 rounded-md">
-            <KeyRound class="h-4 w-4 text-primary" />
+            <KeyRound class="size-4 text-primary" />
           </div>
           <div>
             <Card.Title>API Keys</Card.Title>
@@ -413,7 +413,7 @@
           rel="noopener noreferrer"
         >
           <Button variant="outline" class="gap-2">
-            <KeyRound class="h-4 w-4" />
+            <KeyRound class="size-4" />
             Manage API Keys in Pocket ID
           </Button>
         </a>

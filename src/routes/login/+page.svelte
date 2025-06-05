@@ -155,7 +155,7 @@
       >
         {#if isLoading}
           <div
-            class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
+            class="mr-2 size-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent"
           ></div>
         {/if}
         {isLoading ? "Connecting..." : "Login with Pocket ID"}
@@ -173,7 +173,7 @@
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative">
           <div
-            class="w-64 h-64 rounded-full bg-gradient-to-br from-teal-400 to-purple-500 blur-3xl opacity-50"
+            class="size-64 rounded-full bg-linear-to-br from-teal-400 to-purple-500 blur-3xl opacity-50"
           ></div>
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-white text-6xl font-bold">🚀</div>

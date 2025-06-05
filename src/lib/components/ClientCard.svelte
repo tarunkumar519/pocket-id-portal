@@ -121,7 +121,7 @@
     <div class="flex items-start gap-4 min-h-[90px]">
       <!-- Logo with backdrop (fixed size) -->
       <div
-        class="rounded-xl flex-shrink-0 flex items-center justify-center w-14 h-14 p-2 border shadow-sm"
+        class="rounded-xl shrink-0 flex items-center justify-center size-14 p-2 border shadow-sm"
         style="background: {client.hasLogo && !client.logoError
           ? logoBackdrop
           : 'var(--primary-50, #f0f9ff)'};
@@ -137,7 +137,7 @@
           />
         {:else}
           <div
-            class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20 rounded-lg"
+            class="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/20 rounded-lg"
           >
             <span class="text-2xl">{client.icon || "📱"}</span>
           </div>
@@ -157,7 +157,7 @@
               variant="destructive"
               class="text-xs px-2 py-1 inline-flex items-center gap-1 w-fit"
             >
-              <Lock class="w-3 h-3" />
+              <Lock class="size-3" />
               <span>Restricted</span>
             </Badge>
           {:else}
@@ -165,7 +165,7 @@
               variant="secondary"
               class="text-xs px-2 py-1 inline-flex items-center gap-1 text-green-500 w-fit"
             >
-              <LockOpen class="w-3 h-3" />
+              <LockOpen class="size-3" />
               <span>Unrestricted</span>
             </Badge>
           {/if}
@@ -180,7 +180,7 @@
     </div>
 
     <!-- Flex spacer with reduced maximum height -->
-    <div class="flex-grow min-h-[10px] max-h-[30px]"></div>
+    <div class="grow min-h-[10px] max-h-[30px]"></div>
 
     <!-- Access Controls with reduced height -->
     {#if client.accessGroups && client.accessGroups.length > 0}
@@ -218,7 +218,7 @@
         rel="noopener noreferrer"
         disabled={launchUrl === "#"}
       >
-        <ArrowRight class="w-4 h-4 mr-2" />
+        <ArrowRight class="size-4 mr-2" />
         Launch App
       </Button>
     </div>

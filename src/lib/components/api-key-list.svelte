@@ -101,7 +101,7 @@
 <div class="flex items-center justify-between mb-6">
   <div class="flex items-center gap-2">
     <div class="bg-primary/5 p-1 rounded-md">
-      <KeyRound class="h-4 w-4 text-primary" />
+      <KeyRound class="size-4 text-primary" />
     </div>
     <h3 class="font-medium">Your API Keys</h3>
   </div>
@@ -151,7 +151,7 @@
           >
             <div class="flex items-start gap-3">
               <div class="bg-primary/10 p-2 rounded-full mt-1">
-                <KeyRound class="h-4 w-4 text-primary" />
+                <KeyRound class="size-4 text-primary" />
               </div>
               <div>
                 <div class="flex items-center gap-2">
@@ -161,7 +161,7 @@
                       variant="outline"
                       class="bg-destructive/10 text-destructive text-xs"
                     >
-                      <AlertCircle class="h-3 w-3 mr-1" />
+                      <AlertCircle class="size-3 mr-1" />
                       Expired
                     </Badge>
                   {:else if isExpiringSoon(key.expires_at)}
@@ -169,7 +169,7 @@
                       variant="outline"
                       class="bg-amber-100 text-amber-700 text-xs"
                     >
-                      <Clock class="h-3 w-3 mr-1" />
+                      <Clock class="size-3 mr-1" />
                       Expiring soon
                     </Badge>
                   {/if}
@@ -201,7 +201,7 @@
               class="flex flex-col gap-1 items-end text-xs text-muted-foreground mt-2 sm:mt-0"
             >
               <div class="flex items-center gap-1">
-                <Clock class="h-3 w-3" />
+                <Clock class="size-3" />
                 <span>Created: {formatDate(key.created_at)}</span>
               </div>
 

@@ -86,7 +86,7 @@
         <div
           class="flex items-center h-10 w-full md:w-[300px] rounded-xl border bg-background px-3 focus-within:ring-1 focus-within:ring-primary"
         >
-          <Search class="h-4 w-4 text-muted-foreground mr-2" />
+          <Search class="size-4 text-muted-foreground mr-2" />
           <input
             type="text"
             placeholder="Search applications..."
@@ -102,7 +102,7 @@
     <div class="rounded-xl border bg-destructive/5 p-6 animate-fade-in">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-destructive/10 rounded-full">
-          <Zap class="h-5 w-5 text-destructive" />
+          <Zap class="size-5 text-destructive" />
         </div>
         <div>
           <h3 class="text-lg font-medium text-destructive">
@@ -131,7 +131,7 @@
           <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-2">
               <div class="bg-primary/10 p-1.5 rounded-md">
-                <Users class="h-4 w-4 text-primary" />
+                <Users class="size-4 text-primary" />
               </div>
               <h3 class="font-medium">Your Access Groups</h3>
             </div>
@@ -143,9 +143,7 @@
           </div>
 
           {#if userGroups.length > 0}
-            <div
-              class="flex-grow space-y-2 overflow-y-auto pr-1 custom-scrollbar"
-            >
+            <div class="grow space-y-2 overflow-y-auto pr-1 custom-scrollbar">
               {#each userGroups as group, i (group.id)}
                 <div
                   class="group flex items-center gap-2 p-2 rounded-lg hover:bg-muted/50 transition-colors animate-fade-in opacity-0"
@@ -156,16 +154,16 @@
                     class="w-full justify-between py-1.5 px-3 text-xs group-hover:border-primary/50"
                   >
                     <span class="truncate">{group.name}</span>
-                    <div class="w-2 h-2 rounded-full bg-primary/70"></div>
+                    <div class="size-2 rounded-full bg-primary/70"></div>
                   </Badge>
                 </div>
               {/each}
             </div>
           {:else}
             <div
-              class="flex-grow text-muted-foreground text-sm flex items-center justify-center gap-2 p-3 border border-dashed rounded-lg bg-muted/5"
+              class="grow text-muted-foreground text-sm flex items-center justify-center gap-2 p-3 border border-dashed rounded-lg bg-muted/5"
             >
-              <Users class="h-4 w-4" />
+              <Users class="size-4" />
               <span>No groups assigned</span>
             </div>
           {/if}
@@ -177,13 +175,13 @@
         <Pagination.Root count={totalItems} perPage={itemsPerPage}>
           {#snippet children({ pages, currentPage })}
             <div
-              class="rounded-xl border bg-card shadow-sm flex-grow flex flex-col w-full overflow-hidden h-full animate-fade-in"
+              class="rounded-xl border bg-card shadow-sm grow flex flex-col w-full overflow-hidden h-full animate-fade-in"
               style="animation-delay: 150ms;"
             >
               <div class="p-5 border-b">
                 <div class="flex items-center justify-between">
                   <h3 class="text-lg font-medium flex items-center gap-2">
-                    <Zap class="h-5 w-5 text-primary" />
+                    <Zap class="size-5 text-primary" />
                     Applications
                   </h3>
                   <div class="flex items-center gap-2">
@@ -222,7 +220,7 @@
                 </div>
               </div>
 
-              <div class="flex-grow overflow-auto p-5 pt-3">
+              <div class="grow overflow-auto p-5 pt-3">
                 {#if accessibleClients.length === 0}
                   <div
                     class="flex flex-col items-center justify-center py-12 text-center bg-muted/5 rounded-lg border-dashed border-2 my-4 mx-2"

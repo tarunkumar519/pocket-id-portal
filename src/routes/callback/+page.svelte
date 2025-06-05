@@ -108,7 +108,7 @@
               ></div>
               <!-- Spinner -->
               <div class="relative p-4">
-                <Loader2 class="h-8 w-8 text-primary animate-spin" />
+                <Loader2 class="size-8 text-primary animate-spin" />
               </div>
             </div>
             <div class="text-center">
@@ -124,8 +124,8 @@
             <div
               class="flex items-center gap-3 p-4 rounded-lg bg-destructive/5 border border-destructive/20"
             >
-              <div class="bg-destructive/10 p-2 rounded-full flex-shrink-0">
-                <AlertCircle class="h-5 w-5 text-destructive" />
+              <div class="bg-destructive/10 p-2 rounded-full shrink-0">
+                <AlertCircle class="size-5 text-destructive" />
               </div>
               <div>
                 <p class="font-medium text-sm">Authentication Failed</p>
@@ -151,7 +151,7 @@
               ></div>
               <div class="relative p-4">
                 <CheckCircle
-                  class="h-8 w-8 text-green-600 dark:text-green-400"
+                  class="size-8 text-green-600 dark:text-green-400"
                 />
               </div>
             </div>

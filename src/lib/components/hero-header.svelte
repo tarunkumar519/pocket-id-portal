@@ -17,7 +17,7 @@
 </script>
 
 <div
-  class="rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-8 border shadow-sm animate-fade-in"
+  class="rounded-2xl bg-linear-to-r from-primary/10 to-primary/5 p-8 border shadow-sm animate-fade-in"
 >
   <div
     class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
@@ -26,7 +26,7 @@
       <div class="flex items-center gap-3">
         <div class="bg-primary/10 p-2 rounded-full">
           {#if icon}{@const Icon = icon}
-            <Icon class="h-6 w-6 text-primary" />
+            <Icon class="size-6 text-primary" />
           {/if}
         </div>
         <h1 class="text-3xl font-bold tracking-tight">{title}</h1>

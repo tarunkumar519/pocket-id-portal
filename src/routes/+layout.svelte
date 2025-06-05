@@ -73,7 +73,7 @@
   <!-- Loading state, same for SSR and initial client render -->
   <div class="flex min-h-screen items-center justify-center">
     <div
-      class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
+      class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"
     ></div>
   </div>
 {:else if showSidebar}
@@ -90,7 +90,7 @@
     <div class="text-center">
       <div class="mb-4">
         <div
-          class="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"
+          class="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"
         ></div>
       </div>
       <p class="text-muted-foreground">Checking authentication...</p>

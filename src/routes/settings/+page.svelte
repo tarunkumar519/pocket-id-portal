@@ -129,7 +129,7 @@
       <Card.Header class="bg-card border-b px-6 pb-5">
         <div class="flex items-center gap-3">
           <div class="bg-primary/10 p-1.5 rounded-md">
-            <Palette class="h-4 w-4 text-primary" />
+            <Palette class="size-4 text-primary" />
           </div>
           <div>
             <Card.Title>Portal Preferences</Card.Title>
@@ -145,7 +145,7 @@
           <div>
             <div class="flex items-center gap-2 mb-6">
               <div class="bg-primary/5 p-1 rounded-md">
-                <Palette class="h-4 w-4 text-primary" />
+                <Palette class="size-4 text-primary" />
               </div>
               <h3 class="font-medium text-sm">Theme Preference</h3>
             </div>
@@ -167,7 +167,7 @@
                 >
                   <div class="flex items-center justify-center mb-4">
                     <div class="bg-muted/30 p-2 rounded-full">
-                      <Sun class="h-5 w-5 text-amber-500" />
+                      <Sun class="size-5 text-amber-500" />
                     </div>
                   </div>
                   <span class="block w-full text-center font-medium text-sm">
@@ -186,7 +186,7 @@
                 >
                   <div class="flex items-center justify-center mb-4">
                     <div class="bg-muted/30 p-2 rounded-full">
-                      <Moon class="h-5 w-5 text-indigo-400" />
+                      <Moon class="size-5 text-indigo-400" />
                     </div>
                   </div>
                   <span class="block w-full text-center font-medium text-sm">
@@ -205,7 +205,7 @@
                 >
                   <div class="flex items-center justify-center mb-4">
                     <div class="bg-muted/30 p-2 rounded-full">
-                      <Monitor class="h-5 w-5 text-blue-500" />
+                      <Monitor class="size-5 text-blue-500" />
                     </div>
                   </div>
                   <span class="block w-full text-center font-medium text-sm">
@@ -221,7 +221,7 @@
           <div>
             <div class="flex items-center gap-2 mb-6">
               <div class="bg-primary/5 p-1 rounded-md">
-                <Layout class="h-4 w-4 text-primary" />
+                <Layout class="size-4 text-primary" />
               </div>
               <h3 class="font-medium text-sm">Default Landing Page</h3>
             </div>
@@ -235,7 +235,7 @@
                   onclick={() => updateLandingPage(option.value)}
                 >
                   <div class="bg-muted/30 p-1.5 rounded-md">
-                    <Icon class="h-4 w-4 text-primary" />
+                    <Icon class="size-4 text-primary" />
                   </div>
                   <span class="text-sm font-medium">{option.label}</span>
                 </button>
@@ -250,7 +250,7 @@
             <div>
               <div class="flex items-center gap-2 mb-6">
                 <div class="bg-primary/5 p-1 rounded-md">
-                  <Database class="h-4 w-4 text-primary" />
+                  <Database class="size-4 text-primary" />
                 </div>
                 <h3 class="font-medium text-sm">Cache Management</h3>
                 <span
@@ -269,9 +269,9 @@
                     class="flex items-center gap-2"
                   >
                     {#if loadingStats}
-                      <RefreshCw class="h-4 w-4 animate-spin" />
+                      <RefreshCw class="size-4 animate-spin" />
                     {:else}
-                      <FileJson class="h-4 w-4" />
+                      <FileJson class="size-4" />
                     {/if}
                     View Cache Stats
                   </Button>
@@ -284,9 +284,9 @@
                     class="flex items-center gap-2"
                   >
                     {#if clearingCache}
-                      <RefreshCw class="h-4 w-4 animate-spin" />
+                      <RefreshCw class="size-4 animate-spin" />
                     {:else}
-                      <Trash2 class="h-4 w-4 text-destructive" />
+                      <Trash2 class="size-4 text-destructive" />
                     {/if}
                     Clear Cache
                   </Button>

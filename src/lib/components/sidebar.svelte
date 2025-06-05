@@ -73,7 +73,7 @@
     {#if !isCollapsed}
       <div>
         <div class="flex items-center gap-3 mb-2">
-          <div class="bg-primary/10 p-2 rounded-lg flex-shrink-0">
+          <div class="bg-primary/10 p-2 rounded-lg shrink-0">
             <img src={logoUrl} alt="Pocket ID Logo" class="h-6 w-auto" />
           </div>
           <h1 class="text-xl font-bold">Pocket ID</h1>
@@ -90,14 +90,14 @@
   <!-- Toggle button -->
   <div class="relative">
     <button
-      class="absolute -right-3 top-0 w-6 h-6 rounded-full bg-background border shadow-sm flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
+      class="absolute -right-3 top-0 size-6 rounded-full bg-background border shadow-sm flex items-center justify-center text-muted-foreground hover:text-primary transition-colors"
       onclick={toggleSidebar}
       aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
     >
       {#if isCollapsed}
-        <ChevronRight class="h-4 w-4" />
+        <ChevronRight class="size-4" />
       {:else}
-        <ChevronLeft class="h-4 w-4" />
+        <ChevronLeft class="size-4" />
       {/if}
     </button>
   </div>
@@ -116,7 +116,7 @@
       )}
       aria-label="Dashboard"
     >
-      <LayoutDashboard class="h-4 w-4" />
+      <LayoutDashboard class="size-4" />
       {#if !isCollapsed}
         <span>Dashboard</span>
       {/if}
@@ -134,7 +134,7 @@
       )}
       aria-label="Profile"
     >
-      <User class="h-4 w-4" />
+      <User class="size-4" />
       {#if !isCollapsed}
         <span>Profile</span>
       {/if}
@@ -151,7 +151,7 @@
       )}
       aria-label="Settings"
     >
-      <Settings class="h-4 w-4" />
+      <Settings class="size-4" />
       {#if !isCollapsed}
         <span>Settings</span>
       {/if}
@@ -171,11 +171,11 @@
             <img
               src={user.picture}
               alt="User avatar"
-              class="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
+              class="size-10 rounded-full object-cover border-2 border-primary/20"
             />
           {:else}
             <div
-              class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"
+              class="size-10 rounded-full bg-primary/10 flex items-center justify-center"
             >
               <span class="text-sm font-medium text-primary">
                 {user?.name ? user.name.charAt(0) : "U"}
@@ -197,7 +197,7 @@
           class="w-full flex items-center justify-center gap-2 text-sm"
           onclick={handleLogout}
         >
-          <LogOut class="h-3.5 w-3.5" />
+          <LogOut class="size-3.5" />
           Sign Out
         </Button>
       {:else}
@@ -207,11 +207,11 @@
             <img
               src={user.picture}
               alt="User avatar"
-              class="w-8 h-8 rounded-full object-cover border-2 border-primary/20"
+              class="size-8 rounded-full object-cover border-2 border-primary/20"
             />
           {:else}
             <div
-              class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center"
+              class="size-8 rounded-full bg-primary/10 flex items-center justify-center"
             >
               <span class="text-xs font-medium text-primary">
                 {user?.name ? user.name.charAt(0) : "U"}
@@ -222,11 +222,11 @@
           <Button
             variant="outline"
             size="icon"
-            class="w-8 h-8"
+            class="size-8"
             onclick={handleLogout}
             aria-label="Sign out"
           >
-            <LogOut class="h-3.5 w-3.5" />
+            <LogOut class="size-3.5" />
           </Button>
         </div>
       {/if}
