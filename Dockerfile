@@ -26,7 +26,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 COPY --from=builder /app/static ./static
 
-EXPOSE 3000
+EXPOSE 5173
 LABEL org.opencontainers.image.authors="kmendell"
 LABEL org.opencontainers.image.description="Example Pocket ID User Portal"
 
