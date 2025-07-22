@@ -11,8 +11,8 @@ docker run -d \
   --env-file .env \
   -e PORT=5173 \
   -e HOST=192.168.0.111 \
-  -e PUID=$(id -u) \
-  -e PGID=$(id -g) \
+  -e PUID=1000 \
+  -e PGID=1000 \
   -v pocket-id-data:/app/data \
   --restart unless-stopped \
   pocket-id-portal:latest
